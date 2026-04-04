@@ -1,4 +1,4 @@
-import { startWatcher } from "@/lib/monitors/watcher";
+import { startWatcher } from "@/backend/monitors/watcher";
 
 let watcherStarted = false;
 
