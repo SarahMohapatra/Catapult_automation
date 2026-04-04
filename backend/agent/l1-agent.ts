@@ -3,7 +3,8 @@ import { createToolCallingAgent, AgentExecutor } from "langchain/agents";
 import { smartModel } from "./model";
 import { l1Tools } from "../tools/l1-tools";
 import { L1_SYSTEM_PROMPT } from "../prompts/l1-system-prompt";
-
+import {filesystemTools} from "../tools/file-system-tools"
+const allL1Tools = [...l1Tools, ...filesystemTools];
 export interface AgentStep {
   type: "thinking" | "tool_call" | "tool_result" | "complete";
   content: string;
@@ -38,14 +39,14 @@ export async function runL1Agent(
 
   const agent = createToolCallingAgent({
     llm: smartModel,
-    tools: l1Tools,
+    tools: allL1Tools,
     prompt,
   });
 
   const executor = new AgentExecutor({
     agent,
-    tools: l1Tools,
-    maxIterations: 5,
+    tools: allL1Tools,
+    maxIterations: 12,
     returnIntermediateSteps: true,
     verbose: false,
   });

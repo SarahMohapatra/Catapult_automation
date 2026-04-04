@@ -208,3 +208,6 @@ __marimo__/
 node_modules/
 .next/
 .env*.local
+
+# Dynamic eval copy for worker-logic validation (test-runner)
+demo/.eval/
