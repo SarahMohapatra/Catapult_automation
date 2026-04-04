@@ -3,334 +3,586 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catapult Config Monitor</title>
+  <title>Catapult — Config Monitor &amp; Ticket Pipeline</title>
   <style>
     :root {
-      --bg: #0d1117;
-      --panel: #161b22;
-      --border: #30363d;
-      --text: #c9d1d9;
-      --muted: #8b949e;
-      --blue: #58a6ff;
-      --green: #3fb950;
-      --red: #f85149;
-      --yellow: #d29922;
-      --purple: #bc8cff;
-      --orange: #f0883e;
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #232733;
+      --border: #2e3345;
+      --text: #e1e4ed;
+      --text2: #8b90a0;
+      --accent: #6c8cff;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --orange: #fb923c;
+      --purple: #a78bfa;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
       background: var(--bg);
       color: var(--text);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      min-height: 100vh;
     }
 
+    /* ── Header ─────────────────────────────────────── */
     header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      background: var(--panel);
+      padding: 20px 32px;
       border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .logo { font-size: 15px; font-weight: 700; letter-spacing: 2px; color: var(--blue); }
-    .hdr-right { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
-    .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green); flex-shrink: 0;
-    }
-    .dot.err { background: var(--red); }
-    .dot.fix { background: var(--yellow); animation: pulse 1s ease-in-out infinite; }
-    @keyframes pulse { 50% { opacity: .35; } }
+    header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.5px; }
+    header h1 span { color: var(--accent); }
+    .header-right { display: flex; gap: 10px; align-items: center; }
 
-    main {
-      flex: 1;
-      display: flex;
-      gap: 1px;
-      background: var(--border);
-      overflow: hidden;
+    .status-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      display: inline-block; margin-right: 8px;
+      animation: pulse 2s ease-in-out infinite;
     }
-    .panel {
-      display: flex;
-      flex-direction: column;
-      background: var(--bg);
-    }
-    .panel-l { flex: 3; }
-    .panel-r { flex: 2; }
-    .ph {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 9px 16px;
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .badge {
-      font-size: 11px; font-weight: 400;
-      color: var(--muted);
-      background: var(--bg);
-      padding: 2px 8px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
+    .status-dot.healthy { background: var(--green); }
+    .status-dot.unhealthy { background: var(--red); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-    #editor {
-      flex: 1;
-      background: var(--bg);
-      color: var(--text);
-      border: none;
-      padding: 16px;
-      font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
-      font-size: 13px;
-      line-height: 1.6;
-      resize: none;
-      outline: none;
-      tab-size: 2;
-      white-space: pre;
-      overflow: auto;
-    }
-
-    .efoot {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 9px 16px;
-      background: var(--panel);
-      border-top: 1px solid var(--border);
-    }
+    /* ── Buttons ────────────────────────────────────── */
     button {
-      padding: 5px 14px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--text);
-      font-size: 12px;
-      cursor: pointer;
-      transition: background .15s;
+      background: var(--surface2); color: var(--text);
+      border: 1px solid var(--border); padding: 7px 14px;
+      border-radius: 6px; cursor: pointer;
+      font-family: inherit; font-size: 12px; transition: all .15s;
     }
     button:hover { background: var(--border); }
-    .btn-g { background: #238636; border-color: #2ea043; color: #fff; }
-    .btn-g:hover { background: #2ea043; }
-    .sstat { font-size: 12px; color: var(--muted); }
+    button:disabled { opacity:.4; cursor:not-allowed; }
+    button.primary { background: var(--accent); border-color: var(--accent); color:#fff; }
+    button.primary:hover { opacity:.85; }
+    button.danger  { background: var(--red); border-color: var(--red); color:#fff; }
+    button.danger:hover { opacity:.85; }
+    button.success { background: var(--green); border-color: var(--green); color:#0f1117; }
+    button.success:hover { opacity:.85; }
 
-    #log {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px;
+    /* ── Stats bar ──────────────────────────────────── */
+    .stats {
+      display: flex; gap: 16px; padding: 10px 24px;
+      border-bottom: 1px solid var(--border); background: var(--surface);
     }
-    .le {
-      padding: 5px 10px;
-      margin-bottom: 3px;
-      border-radius: 5px;
-      font-size: 12px;
-      line-height: 1.5;
-      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
-      border-left: 3px solid transparent;
-      word-break: break-word;
-    }
-    .le .t { color: var(--muted); margin-right: 8px; }
-    .le .lb {
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 10px;
-      letter-spacing: .5px;
-      margin-right: 6px;
-    }
-    .le.status        { border-left-color: var(--blue);   background: rgba(88,166,255,.06); }
-    .le.status .lb    { color: var(--blue); }
-    .le.issue         { border-left-color: var(--orange); background: rgba(240,136,62,.06); }
-    .le.issue .lb     { color: var(--orange); }
-    .le.thinking      { border-left-color: var(--blue);   background: rgba(88,166,255,.04); color: var(--muted); }
-    .le.thinking .lb  { color: var(--blue); }
-    .le.tool_call     { border-left-color: var(--purple); background: rgba(188,140,255,.06); }
-    .le.tool_call .lb { color: var(--purple); }
-    .le.tool_result        { border-left-color: var(--muted); background: rgba(139,148,158,.04); color: var(--muted); }
-    .le.tool_result .lb    { color: var(--muted); }
-    .le.success       { border-left-color: var(--green);  background: rgba(63,185,80,.06); }
-    .le.success .lb   { color: var(--green); }
-    .le.complete      { border-left-color: var(--green);  background: rgba(63,185,80,.04); }
-    .le.complete .lb  { color: var(--green); }
-    .le.error         { border-left-color: var(--red);    background: rgba(248,81,73,.06); }
-    .le.error .lb     { color: var(--red); }
-    .le.warning       { border-left-color: var(--yellow); background: rgba(210,153,34,.06); }
-    .le.warning .lb   { color: var(--yellow); }
+    .stat { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+    .stat-value { font-weight: 700; color: var(--text); }
 
-    #log::-webkit-scrollbar, #editor::-webkit-scrollbar { width: 6px; }
-    #log::-webkit-scrollbar-track, #editor::-webkit-scrollbar-track { background: transparent; }
-    #log::-webkit-scrollbar-thumb, #editor::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    /* ── Layout ─────────────────────────────────────── */
+    main { display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: calc(100vh - 105px); }
+    .panel { border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .panel:last-child { border-right: none; }
+    .panel-header {
+      padding: 12px 24px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .panel-header h2 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text2); }
+    .panel-body { flex: 1; overflow-y: auto; padding: 16px; }
 
-    .empty-log {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: var(--muted);
-      font-size: 13px;
+    /* ── Tier tabs ──────────────────────────────────── */
+    .tier-tabs {
+      display: flex; gap: 4px; padding: 8px 24px;
+      border-bottom: 1px solid var(--border); background: var(--surface);
+    }
+    .tier-tab {
+      padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent; transition: all .15s;
+    }
+    .tier-tab:hover { background: var(--surface2); }
+    .tier-tab.active { border-color: var(--accent); background: var(--surface2); }
+    .tier-tab .count {
+      display: inline-block; background: var(--surface2);
+      padding: 1px 6px; border-radius: 3px; margin-left: 6px; font-size: 10px;
+    }
+    .tier-tab.active .count { background: var(--accent); color:#fff; }
+
+    /* ── Right-panel view tabs ──────────────────────── */
+    .view-tabs {
+      display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--surface);
+    }
+    .view-tab {
+      padding: 10px 20px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border-bottom: 2px solid transparent; color: var(--text2);
+      transition: all .15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ── Ticket cards ──────────────────────────────── */
+    .ticket-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px; margin-bottom: 8px;
+      cursor: pointer; transition: border-color .15s;
+    }
+    .ticket-card:hover { border-color: var(--accent); }
+    .ticket-card.selected { border-color: var(--accent); background: var(--surface2); }
+    .ticket-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .ticket-title { font-size: 13px; font-weight: 600; flex: 1; }
+    .ticket-meta { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+    .ticket-time { font-size: 10px; color: var(--text2); margin-top: 4px; }
+
+    /* ── Badges ─────────────────────────────────────── */
+    .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: .5px; }
+    .badge-l1 { background: rgba(52,211,153,.15); color: var(--green); }
+    .badge-l2 { background: rgba(251,191,36,.15); color: var(--yellow); }
+    .badge-l3 { background: rgba(248,113,113,.15); color: var(--red); }
+    .badge-pending { background: rgba(251,191,36,.15); color: var(--yellow); }
+    .badge-in_progress { background: rgba(108,140,255,.15); color: var(--accent); }
+    .badge-resolved { background: rgba(52,211,153,.15); color: var(--green); }
+    .badge-failed { background: rgba(248,113,113,.15); color: var(--red); }
+    .badge-needs_human_review { background: rgba(167,139,250,.15); color: var(--purple); }
+
+    /* ── Detail panel ──────────────────────────────── */
+    .detail-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text2); font-size: 13px; }
+    .detail-section { margin-bottom: 18px; }
+    .detail-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text2); margin-bottom: 6px; }
+    .detail-section pre {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 12px; font-size: 12px; line-height: 1.6;
+      overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+    }
+    .detail-section .value { font-size: 13px; line-height: 1.6; }
+
+    /* ── Steps timeline ────────────────────────────── */
+    .step-item { display: flex; gap: 10px; margin-bottom: 6px; font-size: 11px; line-height: 1.5; }
+    .step-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 2px; }
+    .step-thinking .step-icon { background: rgba(108,140,255,.2); color: var(--accent); }
+    .step-tool_call .step-icon { background: rgba(251,191,36,.2); color: var(--yellow); }
+    .step-tool_result .step-icon { background: rgba(52,211,153,.2); color: var(--green); }
+    .step-complete .step-icon { background: rgba(167,139,250,.2); color: var(--purple); }
+    .step-content { flex: 1; color: var(--text2); }
+    .step-content strong { color: var(--text); }
+
+    /* ── Config editor ─────────────────────────────── */
+    .config-editor-wrap { display: flex; flex-direction: column; height: 100%; }
+    .config-editor-toolbar {
+      display: flex; gap: 8px; padding: 10px 0; align-items: center;
+    }
+    .config-editor-toolbar .spacer { flex: 1; }
+    .config-editor-toolbar .dirty-badge {
+      font-size: 10px; color: var(--yellow); font-weight: 600;
+    }
+    #configTextarea {
+      flex: 1; width: 100%; resize: none;
+      background: var(--bg); color: var(--text);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 14px; font-family: inherit; font-size: 12px;
+      line-height: 1.6; tab-size: 2; outline: none;
+    }
+    #configTextarea:focus { border-color: var(--accent); }
+    #configTextarea.invalid { border-color: var(--red); }
+    .config-error { font-size: 11px; color: var(--red); margin-top: 6px; min-height: 16px; }
+
+    /* ── Log stream ────────────────────────────────── */
+    .log-stream {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 12px; max-height: 180px; overflow-y: auto;
+      font-size: 11px; line-height: 1.8;
+    }
+    .log-entry { display: flex; gap: 8px; }
+    .log-entry.success { color: var(--green); }
+    .log-entry.error { color: var(--red); }
+    .log-entry.warn { color: var(--yellow); }
+    .log-entry.info { color: var(--text2); }
+    .log-entry.status { color: var(--accent); }
+
+    .empty-state { text-align: center; padding: 40px; color: var(--text2); font-size: 13px; }
+    .empty-state p { margin-top: 8px; font-size: 11px; }
+
+    /* ── Modal ──────────────────────────────────────── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.6); z-index: 100;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 24px; width: 420px; max-width: 90vw;
+    }
+    .modal-box h3 { font-size: 14px; margin-bottom: 16px; }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+      .panel { border-right: none; border-bottom: 1px solid var(--border); }
     }
   </style>
 </head>
 <body>
+
+  <!-- ── Header ──────────────────────────────────────── -->
   <header>
-    <div class="logo">CATAPULT</div>
-    <div class="hdr-right">
-      <div class="dot" id="dot"></div>
-      <span id="stxt">Connecting&hellip;</span>
+    <h1><span>Catapult</span> — Config Monitor &amp; Ticket Pipeline</h1>
+    <div class="header-right">
+      <span><span id="statusDot" class="status-dot healthy"></span><span id="statusText">Healthy</span></span>
+      <button onclick="triggerCheck()">Run Check</button>
+      <button class="primary" onclick="showModal('injectModal')">Inject Fault</button>
     </div>
   </header>
 
+  <!-- ── Stats bar ───────────────────────────────────── -->
+  <div class="stats">
+    <div class="stat">Total: <span class="stat-value" id="statTotal">0</span></div>
+    <div class="stat" style="color:var(--green)">Resolved: <span class="stat-value" id="statResolved">0</span></div>
+    <div class="stat" style="color:var(--yellow)">Pending: <span class="stat-value" id="statPending">0</span></div>
+    <div class="stat" style="color:var(--purple)">Human Review: <span class="stat-value" id="statL3">0</span></div>
+    <div class="stat" style="color:var(--red)">Failed: <span class="stat-value" id="statFailed">0</span></div>
+    <div class="stat" style="margin-left:auto; font-size:11px;">Monitoring every 5 s</div>
+  </div>
+
+  <!-- ── Main panels ─────────────────────────────────── -->
   <main>
-    <div class="panel panel-l">
-      <div class="ph">
-        Configuration
-        <span class="badge">demo/config.json</span>
+
+    <!-- Left: Ticket list -->
+    <div class="panel">
+      <div class="tier-tabs">
+        <div class="tier-tab active" onclick="setFilter('all',this)">All <span class="count" id="countAll">0</span></div>
+        <div class="tier-tab" onclick="setFilter('L1',this)">L1 <span class="count" id="countL1">0</span></div>
+        <div class="tier-tab" onclick="setFilter('L2',this)">L2 <span class="count" id="countL2">0</span></div>
+        <div class="tier-tab" onclick="setFilter('L3',this)">L3 <span class="count" id="countL3">0</span></div>
       </div>
-      <textarea id="editor" spellcheck="false"></textarea>
-      <div class="efoot">
-        <button class="btn-g" onclick="saveConfig()">Save Changes</button>
-        <button onclick="triggerCheck()">Check Now</button>
-        <span class="sstat" id="sstat"></span>
+      <div class="panel-body" id="ticketList">
+        <div class="empty-state"><div>No tickets yet</div><p>Edit the config or inject a fault to trigger the pipeline.</p></div>
       </div>
     </div>
 
-    <div class="panel panel-r">
-      <div class="ph">
-        Agent Activity
-        <button onclick="clearLog()" style="padding:2px 10px;font-size:11px">Clear</button>
+    <!-- Right: Tabbed view (Detail / Config Editor) + Logs -->
+    <div class="panel">
+      <div class="view-tabs">
+        <div class="view-tab active" onclick="setView('detail',this)">Ticket Detail</div>
+        <div class="view-tab" onclick="setView('editor',this)">Config Editor</div>
       </div>
-      <div id="log">
-        <div class="empty-log" id="empty-msg">Waiting for events&hellip;</div>
+
+      <!-- Tab: Ticket Detail -->
+      <div class="panel-body" id="viewDetail">
+        <div class="detail-empty">Select a ticket to view details</div>
+      </div>
+
+      <!-- Tab: Config Editor -->
+      <div class="panel-body" id="viewEditor" style="display:none;">
+        <div class="config-editor-wrap">
+          <div class="config-editor-toolbar">
+            <button class="success" onclick="saveConfig()">Save Config</button>
+            <button onclick="resetEditor()">Reset</button>
+            <div class="spacer"></div>
+            <span class="dirty-badge" id="dirtyBadge" style="display:none;">Unsaved changes</span>
+          </div>
+          <textarea id="configTextarea" spellcheck="false"></textarea>
+          <div class="config-error" id="configError"></div>
+        </div>
+      </div>
+
+      <!-- Activity Log (always visible below) -->
+      <div class="panel-header" style="border-top:1px solid var(--border);">
+        <h2>Activity Log</h2>
+      </div>
+      <div style="padding:12px; max-height:200px;">
+        <div class="log-stream" id="logStream"></div>
       </div>
     </div>
+
   </main>
 
-  <script>
-    const editor  = document.getElementById('editor');
-    const logEl   = document.getElementById('log');
-    const dot     = document.getElementById('dot');
-    const stxt    = document.getElementById('stxt');
-    const sstat   = document.getElementById('sstat');
-    const emptyMsg = document.getElementById('empty-msg');
+  <!-- ── Inject Fault modal ──────────────────────────── -->
+  <div class="modal-overlay" id="injectModal">
+    <div class="modal-box">
+      <h3>Inject Config Fault</h3>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button onclick="injectFault('lock_user')">Lock a user account (L1)</button>
+        <button onclick="injectFault('disable_mfa')">Disable user MFA (L1)</button>
+        <button onclick="injectFault('wipe_api_key')">Wipe payment API key (L2)</button>
+        <button onclick="injectFault('disable_service')">Disable UserService (L2)</button>
+        <button onclick="injectFault('zero_pool')">Zero database pool (L2)</button>
+        <button onclick="injectFault('zero_rate_limit')">Zero email rate limit (L2)</button>
+        <button onclick="injectFault('crash_services')">Crash 3 services (L3)</button>
+        <button onclick="injectFault('total_db_failure')">Total DB failure (L3)</button>
+      </div>
+      <button style="margin-top:16px; width:100%;" onclick="hideModals()">Cancel</button>
+    </div>
+  </div>
 
-    let userEditing = false;
-    let editTimer = null;
-    editor.addEventListener('input', () => {
-      userEditing = true;
-      clearTimeout(editTimer);
-      editTimer = setTimeout(() => { userEditing = false; }, 3000);
+<script>
+// ── State ────────────────────────────────────────────
+
+let tickets = [];
+let selectedId = null;
+let currentFilter = "all";
+let currentView = "detail";    // "detail" | "editor"
+let serverConfig = {};         // latest config from server
+let editorDirty = false;       // user has unsaved edits
+
+// ── SSE ──────────────────────────────────────────────
+
+const es = new EventSource("/api/events");
+
+es.addEventListener("connected", (e) => {
+  const data = JSON.parse(e.data);
+  if (data.tickets) { tickets = data.tickets; render(); }
+});
+es.addEventListener("ticket_created", (e) => {
+  const { ticket } = JSON.parse(e.data);
+  upsertTicket(ticket); render();
+});
+es.addEventListener("ticket_updated", (e) => {
+  const { ticket } = JSON.parse(e.data);
+  upsertTicket(ticket); render();
+});
+es.addEventListener("pipeline_complete", (e) => {
+  const data = JSON.parse(e.data);
+  tickets = data.tickets;
+  if (data.config) syncConfig(data.config);
+  render();
+});
+es.addEventListener("config_updated", (e) => {
+  const data = JSON.parse(e.data);
+  if (data.config) syncConfig(data.config);
+});
+es.addEventListener("config_snapshot", (e) => {
+  const data = JSON.parse(e.data);
+  if (data.config) syncConfig(data.config);
+});
+es.addEventListener("check", (e) => {
+  const data = JSON.parse(e.data);
+  const dot = document.getElementById("statusDot");
+  const txt = document.getElementById("statusText");
+  if (data.healthy) {
+    dot.className = "status-dot healthy"; txt.textContent = "Healthy";
+  } else {
+    dot.className = "status-dot unhealthy"; txt.textContent = `${data.issueCount} issue(s)`;
+  }
+});
+es.addEventListener("log", (e) => {
+  const data = JSON.parse(e.data);
+  addLog(data.type, data.message);
+});
+
+function upsertTicket(t) {
+  const idx = tickets.findIndex(x => x.id === t.id);
+  if (idx >= 0) tickets[idx] = t; else tickets.unshift(t);
+}
+
+// ── Config sync ──────────────────────────────────────
+
+function syncConfig(cfg) {
+  serverConfig = cfg;
+  if (!editorDirty) loadConfigIntoEditor();
+}
+
+function loadConfigIntoEditor() {
+  const ta = document.getElementById("configTextarea");
+  if (ta) {
+    ta.value = JSON.stringify(serverConfig, null, 2);
+    ta.classList.remove("invalid");
+  }
+  document.getElementById("configError").textContent = "";
+  editorDirty = false;
+  document.getElementById("dirtyBadge").style.display = "none";
+}
+
+// ── Rendering ────────────────────────────────────────
+
+function render() {
+  renderTicketList();
+  renderDetail();
+  renderStats();
+}
+
+function renderStats() {
+  document.getElementById("statTotal").textContent = tickets.length;
+  document.getElementById("statResolved").textContent = tickets.filter(t => t.status==="resolved").length;
+  document.getElementById("statPending").textContent = tickets.filter(t => t.status==="pending"||t.status==="in_progress").length;
+  document.getElementById("statL3").textContent = tickets.filter(t => t.status==="needs_human_review").length;
+  document.getElementById("statFailed").textContent = tickets.filter(t => t.status==="failed").length;
+  document.getElementById("countAll").textContent = tickets.length;
+  document.getElementById("countL1").textContent = tickets.filter(t => t.tier==="L1").length;
+  document.getElementById("countL2").textContent = tickets.filter(t => t.tier==="L2").length;
+  document.getElementById("countL3").textContent = tickets.filter(t => t.tier==="L3").length;
+}
+
+function renderTicketList() {
+  const el = document.getElementById("ticketList");
+  const list = currentFilter === "all" ? tickets : tickets.filter(t => t.tier === currentFilter);
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state"><div>No ${currentFilter==="all"?"":currentFilter+" "}tickets</div><p>Edit the config or inject a fault to trigger the pipeline.</p></div>`;
+    return;
+  }
+  el.innerHTML = list.map(t => `
+    <div class="ticket-card ${t.id===selectedId?'selected':''}" onclick="selectTicket('${t.id}')">
+      <div class="ticket-top"><div class="ticket-title">${esc(t.title)}</div></div>
+      <div class="ticket-meta">
+        ${t.tier?`<span class="badge badge-${t.tier.toLowerCase()}">${t.tier}</span>`:''}
+        <span class="badge badge-${t.status}">${fmtStatus(t.status)}</span>
+        <span style="font-size:10px;color:var(--text2)">${t.id}</span>
+      </div>
+      <div class="ticket-time">${timeAgo(t.createdAt)}</div>
+    </div>`).join("");
+}
+
+function renderDetail() {
+  const el = document.getElementById("viewDetail");
+  const t = tickets.find(x => x.id === selectedId);
+  if (!t) { el.innerHTML = `<div class="detail-empty">Select a ticket to view details</div>`; return; }
+
+  const ao = t.agentOutput;
+  let stepsHtml = "";
+  if (ao?.steps?.length) {
+    stepsHtml = `<div class="detail-section"><h3>Agent Steps</h3><div>${ao.steps.map(s => `
+      <div class="step-item step-${s.type}">
+        <div class="step-icon">${stepIcon(s.type)}</div>
+        <div class="step-content">${s.toolName?`<strong>${s.toolName}</strong> — `:''}${esc(trunc(s.content,200))}</div>
+      </div>`).join("")}</div></div>`;
+  }
+
+  el.innerHTML = `
+    <div style="margin-bottom:14px">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+        ${t.tier?`<span class="badge badge-${t.tier.toLowerCase()}">${t.tier}</span>`:''}
+        <span class="badge badge-${t.status}">${fmtStatus(t.status)}</span>
+        <span style="font-size:11px;color:var(--text2)">${t.id}</span>
+      </div>
+      <h2 style="font-size:15px;font-weight:600;margin-bottom:3px">${esc(t.title)}</h2>
+      <div style="font-size:11px;color:var(--text2)">Created ${new Date(t.createdAt).toLocaleString()}${t.resolvedAt?` · Resolved ${new Date(t.resolvedAt).toLocaleString()}`:''}</div>
+    </div>
+    ${t.classificationReasoning?`<div class="detail-section"><h3>Classification</h3><div class="value">${esc(t.classificationReasoning)} ${t.confidence!=null?`(${(t.confidence*100).toFixed(0)}%)`:''}</div></div>`:''}
+    <div class="detail-section"><h3>Description</h3><pre>${esc(t.description)}</pre></div>
+    ${ao?`
+      <div class="detail-section"><h3>Problem</h3><div class="value">${esc(ao.problem)}</div></div>
+      <div class="detail-section"><h3>Solution</h3><pre>${esc(ao.solution)}</pre></div>
+      ${ao.rootCause?`<div class="detail-section"><h3>Root Cause</h3><div class="value">${esc(ao.rootCause)}</div></div>`:''}
+      ${ao.recommendedFollowUp?`<div class="detail-section"><h3>Recommended Follow-up</h3><div class="value">${esc(ao.recommendedFollowUp)}</div></div>`:''}
+    `:''}
+    ${stepsHtml}`;
+}
+
+// ── View switching (Detail / Editor) ─────────────────
+
+function setView(view, tabEl) {
+  currentView = view;
+  document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+  tabEl.classList.add("active");
+  document.getElementById("viewDetail").style.display = view === "detail" ? "" : "none";
+  document.getElementById("viewEditor").style.display = view === "editor" ? "" : "none";
+  if (view === "editor" && !editorDirty) loadConfigIntoEditor();
+}
+
+// ── Config Editor actions ────────────────────────────
+
+document.addEventListener("DOMContentLoaded", () => {
+  const ta = document.getElementById("configTextarea");
+  ta.addEventListener("input", () => {
+    editorDirty = true;
+    document.getElementById("dirtyBadge").style.display = "";
+    try { JSON.parse(ta.value); ta.classList.remove("invalid"); document.getElementById("configError").textContent = ""; }
+    catch (e) { ta.classList.add("invalid"); document.getElementById("configError").textContent = "Invalid JSON: " + e.message; }
+  });
+});
+
+async function saveConfig() {
+  const ta = document.getElementById("configTextarea");
+  let parsed;
+  try { parsed = JSON.parse(ta.value); }
+  catch (e) { document.getElementById("configError").textContent = "Cannot save — invalid JSON"; return; }
+
+  try {
+    const r = await fetch("/api/config", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed),
     });
+    if (!r.ok) throw new Error((await r.json()).error || "Save failed");
+    editorDirty = false;
+    document.getElementById("dirtyBadge").style.display = "none";
+    addLog("info", "Config saved from editor");
+  } catch (e) {
+    document.getElementById("configError").textContent = "Save error: " + e.message;
+  }
+}
 
-    async function loadConfig() {
-      try {
-        const r = await fetch('/api/config');
-        const c = await r.json();
-        if (!userEditing) editor.value = JSON.stringify(c, null, 2);
-      } catch { addLog('error', 'Failed to load config'); }
+function resetEditor() {
+  loadConfigIntoEditor();
+  addLog("info", "Editor reset to server state");
+}
+
+// ── Helpers ──────────────────────────────────────────
+
+function selectTicket(id) {
+  selectedId = id;
+  if (currentView !== "detail") {
+    const tab = document.querySelector('.view-tab');
+    setView("detail", tab);
+  }
+  render();
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll(".tier-tab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  render();
+}
+
+function addLog(type, msg) {
+  const c = document.getElementById("logStream");
+  const d = document.createElement("div");
+  d.className = `log-entry ${type}`;
+  d.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function fmtStatus(s) {
+  return {pending:"Pending",in_progress:"In Progress",resolved:"Resolved",failed:"Failed",needs_human_review:"Needs Human Review"}[s]||s;
+}
+function stepIcon(t) { return {thinking:"💭",tool_call:"🔧",tool_result:"📋",complete:"✓"}[t]||"·"; }
+function timeAgo(iso) {
+  const m = Math.floor((Date.now()-new Date(iso).getTime())/60000);
+  if (m<1) return "just now"; if (m<60) return m+"m ago";
+  const h = Math.floor(m/60); if (h<24) return h+"h ago"; return Math.floor(h/24)+"d ago";
+}
+function trunc(s,n) { return s&&s.length>n?s.slice(0,n)+"…":s; }
+function esc(s) { if(!s)return""; const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+// ── Modals ───────────────────────────────────────────
+
+function showModal(id) { document.getElementById(id).classList.add("open"); }
+function hideModals() { document.querySelectorAll(".modal-overlay").forEach(m => m.classList.remove("open")); }
+
+async function triggerCheck() {
+  try { const r=await fetch("/api/check",{method:"POST"}); if(!r.ok){const d=await r.json();addLog("warn",d.error||"Check failed");} }
+  catch(e){addLog("error",e.message);}
+}
+
+async function injectFault(type) {
+  hideModals();
+  try {
+    const config = await (await fetch("/api/config")).json();
+    switch(type) {
+      case "lock_user":      { const k=Object.keys(config.users||{}); if(k.length) config.users[k[0]].locked=true; break; }
+      case "disable_mfa":    { const k=Object.keys(config.users||{}); if(k.length) config.users[k[0]].mfaEnabled=false; break; }
+      case "wipe_api_key":   config.paymentService.apiKey=""; break;
+      case "disable_service": config.userService.enabled=false; break;
+      case "zero_pool":      config.database.poolSize=0; break;
+      case "zero_rate_limit": config.emailService.rateLimit=0; break;
+      case "crash_services": for(const n of Object.keys(config.services||{})) config.services[n].status="CRASHED"; break;
+      case "total_db_failure": config.database.connected=false; config.database.poolSize=0; break;
     }
+    await fetch("/api/config",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(config)});
+    addLog("info",`Fault injected: ${type}`);
+  } catch(e) { addLog("error",`Inject failed: ${e.message}`); }
+}
 
-    async function saveConfig() {
-      try {
-        const c = JSON.parse(editor.value);
-        const r = await fetch('/api/config', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(c),
-        });
-        if (!r.ok) throw new Error('Save failed');
-        flash('Saved!', 'var(--green)');
-      } catch (e) {
-        flash(e.message || 'Invalid JSON', 'var(--red)');
-      }
-    }
+// ── Init ─────────────────────────────────────────────
 
-    function flash(msg, color) {
-      sstat.textContent = msg;
-      sstat.style.color = color;
-      setTimeout(() => { sstat.textContent = ''; }, 2500);
-    }
-
-    async function triggerCheck() {
-      try { await fetch('/api/check', { method: 'POST' }); } catch {}
-    }
-
-    function esc(s) {
-      const d = document.createElement('div');
-      d.textContent = s;
-      return d.innerHTML;
-    }
-
-    function addLog(type, message) {
-      if (emptyMsg) emptyMsg.remove();
-      const el = document.createElement('div');
-      el.className = 'le ' + type;
-      const ts = new Date().toLocaleTimeString();
-      const label = type.replace('_', ' ');
-      el.innerHTML = '<span class="t">' + ts + '</span><span class="lb">' + label + '</span>' + esc(message);
-      logEl.appendChild(el);
-      logEl.scrollTop = logEl.scrollHeight;
-    }
-
-    function clearLog() {
-      logEl.innerHTML = '';
-    }
-
-    let isFixing = false;
-
-    function connectSSE() {
-      const es = new EventSource('/api/events');
-
-      es.addEventListener('connected', () => {
-        dot.className = 'dot';
-        stxt.textContent = 'Connected';
-        addLog('status', 'Connected to server');
-      });
-
-      es.addEventListener('check', (e) => {
-        const d = JSON.parse(e.data);
-        if (d.healthy) {
-          if (!isFixing) { dot.className = 'dot'; stxt.textContent = 'Healthy'; }
-        } else {
-          dot.className = 'dot fix';
-          stxt.textContent = 'Fixing ' + d.issueCount + ' issue(s)\u2026';
-          isFixing = true;
-        }
-      });
-
-      es.addEventListener('log', (e) => {
-        const d = JSON.parse(e.data);
-        addLog(d.type, d.message);
-      });
-
-      es.addEventListener('step', (e) => {
-        const d = JSON.parse(e.data);
-        let msg = '';
-        if (d.type === 'tool_call') msg = d.toolName + ': ' + (d.content || '').slice(0, 200);
-        else if (d.type === 'tool_result') msg = d.toolName + ': ' + (d.content || '').slice(0, 150);
-        else msg = (d.content || '').slice(0, 250);
-        addLog(d.type, msg);
-      });
-
-      es.addEventListener('config_updated', (e) => {
-        const d = JSON.parse(e.data);
-        if (!userEditing) editor.value = JSON.stringify(d.config, null, 2);
-        dot.className = 'dot';
-        stxt.textContent = 'Healthy';
-        isFixing = false;
-      });
-
-      es.onerror = () => {
-        dot.className = 'dot err';
-        stxt.textContent = 'Disconnected';
-      };
-    }
-
-    loadConfig();
-    connectSSE();
-  </script>
+(async () => {
+  try {
+    tickets = await (await fetch("/api/tickets")).json();
+    serverConfig = await (await fetch("/api/config")).json();
+    loadConfigIntoEditor();
+    render();
+  } catch {}
+})();
+</script>
 </body>
 </html>

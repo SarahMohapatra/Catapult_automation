@@ -14,7 +14,7 @@ export async function processTicket(
   let ticket = createTicket(title, description);
   const notify = () => onUpdate && onUpdate(ticket);
 
-  ticket = updateTicket(ticket.id, { status: "classifying" });
+  ticket = updateTicket(ticket.id, { status: "in_progress" });
   notify();
 
   const classification = await classifyIssue(title, description);
@@ -24,14 +24,12 @@ export async function processTicket(
     category: classification.category,
     confidence: classification.confidence,
     classificationReasoning: classification.reasoning,
-    status: "resolving",
   });
   notify();
 
   const allSteps: AgentStep[] = [];
   let resolutionStatus = "UNRESOLVED";
   let finalOutput = "";
-  let escalationReport = null;
 
   if (classification.tier === "L1") {
     const result = await runL1Agent(
@@ -40,7 +38,6 @@ export async function processTicket(
       classification.category,
       (step) => {
         allSteps.push(step);
-        ticket = updateTicket(ticket.id, { steps: [...allSteps] });
         notify();
       }
     );
@@ -53,47 +50,70 @@ export async function processTicket(
       classification.category,
       (step) => {
         allSteps.push(step);
-        ticket = updateTicket(ticket.id, { steps: [...allSteps] });
         notify();
       }
     );
     resolutionStatus = result.status;
     finalOutput = result.finalOutput;
+
+    if (result.status === "ESCALATE") {
+      resolutionStatus = "ESCALATED";
+    }
   } else {
     const report = await runEscalationHandler(
       title,
       description,
       classification.category
     );
-    escalationReport = report;
     resolutionStatus = "ESCALATED";
     finalOutput = report.summary;
+
+    ticket = updateTicket(ticket.id, {
+      status: "needs_human_review",
+      agentOutput: {
+        problem: report.summary,
+        solution: `HUMAN REVIEW REQUIRED — ${report.whyBeyondScope}\n\nSuggested actions:\n${report.suggestedActions.map((a, i) => `${i + 1}. ${a}`).join("\n")}`,
+        rawAgentOutput: JSON.stringify(report, null, 2),
+        steps: allSteps,
+        rootCause: report.whyBeyondScope,
+        recommendedFollowUp: report.suggestedActions.join("\n"),
+      },
+    });
+    notify();
+    return ticket;
   }
 
-  const incidentReport = await generateIncidentReport({
-    ticketId: ticket.id,
-    title,
-    description,
-    tier: classification.tier,
-    category: classification.category,
-    confidence: classification.confidence,
-    steps: allSteps,
-    resolutionStatus,
-    finalOutput,
-  });
+  let reportSummary = finalOutput;
+  try {
+    const incidentReport = await generateIncidentReport({
+      ticketId: ticket.id,
+      title,
+      description,
+      tier: classification.tier,
+      category: classification.category,
+      confidence: classification.confidence,
+      steps: allSteps,
+      resolutionStatus,
+      finalOutput,
+    });
+    reportSummary = incidentReport.actionsTaken;
+  } catch {
+    /* fall back to raw agent output */
+  }
+
+  const isEscalated =
+    resolutionStatus === "ESCALATED" || resolutionStatus === "ESCALATE";
 
   ticket = updateTicket(ticket.id, {
-    status:
-      resolutionStatus === "ESCALATED" ||
-      resolutionStatus === "ESCALATE"
-        ? "escalated"
-        : "resolved",
-    steps: allSteps,
-    resolutionStatus,
-    finalOutput,
-    incidentReport,
-    escalationReport,
-    resolvedAt: new Date().toISOString(),
+    status: isEscalated ? "needs_human_review" : "resolved",
+    tier: isEscalated ? "L3" : classification.tier,
+    resolvedAt: isEscalated ? null : new Date().toISOString(),
+    agentOutput: {
+      problem: description,
+      solution: reportSummary,
+      rawAgentOutput: finalOutput,
+      steps: allSteps,
+    },
   });
   notify();
 
