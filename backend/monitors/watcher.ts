@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
-import { processTicket } from "@/lib/agent/pipeline";
+import { processTicket } from "../agent/pipeline";
 
-const LOG_FILE = path.join(process.cwd(), "demo-app/app.log");
-const DEMO_APP_DIR = path.join(process.cwd(), "demo-app");
+const LOG_FILE = path.join(process.cwd(), "demo/app.log");
+const DEMO_APP_DIR = path.join(process.cwd(), "demo");
 
 // Track what we have already processed so we don't submit duplicate tickets
 const processedErrors = new Set<string>();

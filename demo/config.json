@@ -4,7 +4,7 @@
     "maxUsers": 1000
   },
   "paymentService": {
-    "apiKey": "pk_demo_abc123xyz",
+    "apiKey": "",
     "timeout": 5000
   },
   "emailService": {

@@ -3,7 +3,7 @@ import { z } from "zod";
 import fs from "fs";
 import path from "path";
 
-const DEMO_APP_DIR = path.join(process.cwd(), "demo-app");
+const DEMO_APP_DIR = path.join(process.cwd(), "demo");
 const CONFIG_FILE = path.join(DEMO_APP_DIR, "config.json");
 const LOG_FILE = path.join(DEMO_APP_DIR, "app.log");
 
@@ -12,7 +12,7 @@ export const readConfigTool = tool(
     const content = fs.readFileSync(CONFIG_FILE, "utf-8");
     return JSON.stringify({
       success: true,
-      filePath: "demo-app/config.json",
+      filePath: "demo/config.json",
       content: JSON.parse(content),
     });
   },

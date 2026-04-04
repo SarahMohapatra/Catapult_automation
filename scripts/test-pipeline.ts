@@ -1,73 +1,87 @@
-import "dotenv/config";
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+
+import * as fs from "fs";
+import * as path from "path";
 import { processTicket } from "../backend/agent/pipeline";
+import { startWatcher } from "../backend/monitors/watcher";
 
-const SAMPLE_TICKET = {
-  title: "Employee locked out of account",
-  description:
-    "New hire Sarah Chen (sarah.chen@company.com) reports she cannot log in to her account. " +
-    "She has tried resetting her password via the self-service portal but it says her account is locked. " +
-    "She needs access restored ASAP to complete onboarding.",
-};
+const CONFIG_FILE = path.join(process.cwd(), "demo/config.json");
+const LOG_FILE = path.join(process.cwd(), "demo/app.log");
 
-async function main() {
-  console.log("=".repeat(60));
-  console.log("  NeuralOps Pipeline — Test Run");
-  console.log("=".repeat(60));
-  console.log();
-  console.log(`Ticket: "${SAMPLE_TICKET.title}"`);
-  console.log(`Description: ${SAMPLE_TICKET.description}`);
-  console.log();
+// Clear the log file before starting so output is clean
+fs.writeFileSync(LOG_FILE, "");
 
-  const ticket = await processTicket(
-    SAMPLE_TICKET.title,
-    SAMPLE_TICKET.description,
-    (updated) => {
-      console.log(`  [${updated.status.toUpperCase()}]`, updated.tier ?? "", updated.category ?? "");
-      if (updated.steps.length > 0) {
-        const latest = updated.steps[updated.steps.length - 1];
-        console.log(`    → ${latest.type}: ${latest.content.slice(0, 120)}`);
-      }
-    }
-  );
+console.log("=".repeat(60));
+console.log("  NEURALOPS — AUTONOMOUS DEMO TEST");
+console.log("=".repeat(60));
+console.log("");
+console.log("This test will:");
+console.log("1. Start the watcher (monitors demo/app.log)");
+console.log("2. Simulate the demo app breaking (corrupt config.json)");
+console.log("3. Write an error to app.log");
+console.log("4. Watch the agent auto-detect and fix it");
+console.log("5. Show you the config.json before and after");
+console.log("");
 
-  console.log();
-  console.log("=".repeat(60));
-  console.log("  RESULT");
-  console.log("=".repeat(60));
-  console.log();
-  console.log(`Ticket ID:    ${ticket.id}`);
-  console.log(`Status:       ${ticket.status}`);
-  console.log(`Tier:         ${ticket.tier}`);
-  console.log(`Category:     ${ticket.category}`);
-  console.log(`Confidence:   ${ticket.confidence}`);
-  console.log(`Resolution:   ${ticket.resolutionStatus}`);
-  console.log();
-  console.log("--- Final Output ---");
-  console.log(ticket.finalOutput);
-  console.log();
+// Show the config before
+console.log("--- CONFIG BEFORE BREAK ---");
+console.log(fs.readFileSync(CONFIG_FILE, "utf-8"));
+console.log("");
 
-  if (ticket.incidentReport) {
-    console.log("--- Incident Report ---");
-    console.log(`  Root Cause:  ${ticket.incidentReport.rootCauseHypothesis}`);
-    console.log(`  Actions:     ${ticket.incidentReport.actionsTaken}`);
-    console.log(`  Follow-up:   ${ticket.incidentReport.recommendedFollowUp}`);
-    console.log(`  Tools Used:  ${ticket.incidentReport.toolsUsed.join(", ")}`);
-  }
-
-  if (ticket.escalationReport) {
-    console.log("--- Escalation Report ---");
-    console.log(`  Summary:     ${ticket.escalationReport.summary}`);
-    console.log(`  Why:         ${ticket.escalationReport.whyBeyondScope}`);
-    console.log(`  Urgency:     ${ticket.escalationReport.urgencyLevel}`);
-    console.log(`  Actions:     ${ticket.escalationReport.suggestedActions.join("; ")}`);
-  }
-
-  console.log();
-  console.log(`Created:  ${ticket.createdAt}`);
-  console.log(`Resolved: ${ticket.resolvedAt}`);
-}
-
-main().catch((err) => {
-  console.error("Pipeline failed:", err);
-  process.exit(1);
+// Start the watcher
+console.log("[WATCHER] Starting watcher...");
+startWatcher((title) => {
+  console.log(`\n[WATCHER] ✓ Auto-detected issue: "${title}"`);
+  console.log("[WATCHER] Submitting to agent pipeline...\n");
 });
+
+// Give watcher 1 second to initialize
+setTimeout(() => {
+
+  // Step 1: Break the config (simulates chaos monkey)
+  console.log("[CHAOS] Breaking the config — wiping PaymentService API key...");
+  const config = JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8"));
+  config.paymentService.apiKey = "";
+  fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
+  console.log("[CHAOS] config.json corrupted.");
+  console.log("");
+
+  // Step 2: Write the error log entry (simulates demo app detecting it)
+  const errorLine = `[${new Date().toISOString()}] [ERROR] [PaymentService] PaymentService API key is missing from config. Cannot process payments.\n`;
+  fs.appendFileSync(LOG_FILE, errorLine);
+  console.log("[DEMO APP] Error written to app.log:");
+  console.log(" ", errorLine.trim());
+  console.log("");
+  console.log("[WATCHER] Polling log file... (checking every 3 seconds)");
+  console.log("[AGENT]   Waiting for agent to detect and fix...");
+  console.log("");
+
+  // Step 3: After 30 seconds, show the result
+  setTimeout(() => {
+    console.log("");
+    console.log("=".repeat(60));
+    console.log("  RESULT");
+    console.log("=".repeat(60));
+
+    const finalConfig = fs.readFileSync(CONFIG_FILE, "utf-8");
+    const parsed = JSON.parse(finalConfig);
+
+    console.log("\n--- CONFIG AFTER AGENT FIX ---");
+    console.log(finalConfig);
+
+    if (parsed.paymentService.apiKey && parsed.paymentService.apiKey !== "") {
+      console.log("✅ SUCCESS: Agent restored the PaymentService API key.");
+      console.log(`   Restored value: "${parsed.paymentService.apiKey}"`);
+    } else {
+      console.log("❌ FAILED: API key is still empty. Check agent logs above.");
+    }
+
+    console.log("\n--- RECENT LOG ENTRIES ---");
+    const logs = fs.readFileSync(LOG_FILE, "utf-8");
+    console.log(logs);
+
+    process.exit(0);
+  }, 30000);
+
+}, 1000);
