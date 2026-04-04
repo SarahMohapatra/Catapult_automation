@@ -91,9 +91,18 @@ Remember to gather information before acting. End with a clear status: RESOLVED,
   });
 
   const outputLower = result.output.toLowerCase();
-  let status: L2ResolutionResult["status"] = "RESOLVED";
-  if (outputLower.includes("escalate")) status = "ESCALATE";
-  else if (outputLower.includes("partially")) status = "PARTIALLY_RESOLVED";
+let status: L2ResolutionResult["status"] = "RESOLVED";
+
+if (outputLower.includes("escalate") || outputLower.includes("beyond scope")) {
+  status = "ESCALATE";
+} else if (
+  outputLower.includes("unable to") ||
+  outputLower.includes("could not") ||
+  outputLower.includes("failed to") ||
+  outputLower.includes("not resolved")
+) {
+  status = "PARTIALLY_RESOLVED";
+}
 
   return {
     status,

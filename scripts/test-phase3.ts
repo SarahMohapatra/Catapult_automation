@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
+import { writeConfigTool } from "../backend/tools/file-system-tools";
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 import * as fs from "fs";
@@ -10,11 +11,44 @@ const CONFIG_FILE = path.join(process.cwd(), "demo/config.json");
 function readConfig() {
   return JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8"));
 }
+async function preflightCheck(): Promise<boolean> {
+  console.log("Preflight: Testing write_config tool directly...");
+
+  try {
+    // Test the exact shape the agent will send
+    const result = await writeConfigTool.invoke({
+      updates: { paymentService: { apiKey: "pk_demo_abc123xyz" } },
+    });
+
+    const parsed = JSON.parse(result);
+
+    if (parsed.success) {
+      console.log("✅ Preflight PASSED — write_config tool accepts correct shape");
+      return true;
+    } else {
+      console.log("❌ Preflight FAILED —", parsed.error);
+      return false;
+    }
+  } catch (err: any) {
+    console.log("❌ Preflight ERROR —", err.message);
+    console.log(
+      "   The tool threw an exception. This means the schema itself is rejecting the input."
+    );
+    return false;
+  }
+}
 
 async function runPhase3() {
   console.log("=".repeat(50));
   console.log("  PHASE 3 — Agent + Tools Test");
   console.log("=".repeat(50));
+  console.log("");
+    // Run preflight first — if this fails, agent will definitely fail too
+  const preflightOk = await preflightCheck();
+  if (!preflightOk) {
+    console.log("\n❌ Stopping. Fix file-system-tools.ts before running the agent.\n");
+    process.exit(1);
+  }
   console.log("");
 
   // First corrupt the config
