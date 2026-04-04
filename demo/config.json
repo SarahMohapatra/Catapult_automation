@@ -1,0 +1,18 @@
+{
+  "userService": {
+    "enabled": true,
+    "maxUsers": 1000
+  },
+  "paymentService": {
+    "apiKey": "pk_demo_abc123xyz",
+    "timeout": 5000
+  },
+  "emailService": {
+    "smtpHost": "smtp.demo.com",
+    "rateLimit": 100
+  },
+  "database": {
+    "connected": true,
+    "poolSize": 20
+  }
+}
