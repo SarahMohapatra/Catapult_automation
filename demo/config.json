@@ -14,5 +14,54 @@
   "database": {
     "connected": true,
     "poolSize": 20
+  },
+  "users": {
+    "USR-4421": {
+      "name": "Sarah Johnson",
+      "email": "sarah.j@company.com",
+      "locked": false,
+      "passwordHash": "hash_reset_1775317437556",
+      "mfaEnabled": true,
+      "mfaMethod": "authenticator_app",
+      "accessGrants": []
+    },
+    "USR-7821": {
+      "name": "Priya Patel",
+      "email": "priya.p@company.com",
+      "locked": false,
+      "passwordHash": "hash_v1_def",
+      "mfaEnabled": true,
+      "mfaMethod": "sms",
+      "accessGrants": [
+        {
+          "resource": "analytics-dashboard",
+          "level": "read",
+          "grantedAt": "2024-01-01T00:00:00.000Z"
+        }
+      ]
+    },
+    "USR-3312": {
+      "name": "Tom Richards",
+      "email": "tom.r@company.com",
+      "locked": false,
+      "passwordHash": "hash_v1_ghi",
+      "mfaEnabled": true,
+      "mfaMethod": "authenticator_app",
+      "accessGrants": []
+    }
+  },
+  "services": {
+    "PaymentService": {
+      "status": "RUNNING"
+    },
+    "AuthService": {
+      "status": "RUNNING"
+    },
+    "EmailService": {
+      "status": "RUNNING"
+    },
+    "DatabaseService": {
+      "status": "RUNNING"
+    }
   }
 }

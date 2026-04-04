@@ -51,7 +51,7 @@ function normalizeUpdates(raw: any): Record<string, any> {
   // Shape 3: agent sends the config fields directly (most common)
   // e.g. { paymentService: { apiKey: "..." } }
   if (raw && typeof raw === "object") {
-    const knownKeys = ["userService", "paymentService", "emailService", "database"];
+    const knownKeys = ["userService", "paymentService", "emailService", "database", "users", "services"];
     const hasKnownKey = Object.keys(raw).some((k) => knownKeys.includes(k));
     if (hasKnownKey) return raw;
   }
