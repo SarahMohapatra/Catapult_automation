@@ -9,7 +9,7 @@
   },
   "emailService": {
     "smtpHost": "smtp.demo.com",
-    "rateLimit": 100
+    "rateLimit": 0
   },
   "database": {
     "connected": true,
