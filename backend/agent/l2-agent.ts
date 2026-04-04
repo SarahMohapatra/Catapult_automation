@@ -4,7 +4,7 @@ import { smartModel } from "./model";
 import { l2Tools } from "../tools/l2-tools";
 import { L2_SYSTEM_PROMPT } from "../prompts/l2-system-prompt";
 import { AgentStep } from "./l1-agent";
-
+const allL2Tools = [...l2Tools, ...filesystemTools];
 export interface L2ResolutionResult {
   status: "RESOLVED" | "PARTIALLY_RESOLVED" | "ESCALATE";
   steps: AgentStep[];
@@ -33,13 +33,13 @@ export async function runL2Agent(
 
   const agent = createToolCallingAgent({
     llm: smartModel,
-    tools: l2Tools,
+    tools: allL2Tools,
     prompt,
   });
 
   const executor = new AgentExecutor({
     agent,
-    tools: l2Tools,
+    tools: allL2Tools,
     maxIterations: 6,
     returnIntermediateSteps: true,
     verbose: false,

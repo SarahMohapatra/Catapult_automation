@@ -16,7 +16,6 @@ Examples:
 L2 — Requires diagnosis, log reading, or system interaction. Medium complexity.
 Examples:
 - Application throwing errors (500s, crashes, exceptions)
-- Service outage or degraded performance
 - Failed deployments or CI/CD pipeline issues
 - API integration failures
 - Database query errors or slow queries
