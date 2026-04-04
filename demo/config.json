@@ -8,7 +8,7 @@
     "timeout": 5000
   },
   "emailService": {
-    "smtpHost": "smtp.demo.com",
+    "smtpHost": "smtp.gmail.com",
     "rateLimit": 100
   },
   "database": {
@@ -20,7 +20,7 @@
       "name": "Sarah Johnson",
       "email": "sarah.j@company.com",
       "locked": false,
-      "passwordHash": "hash_reset_1775317437556",
+      "passwordHash": "hash_reset_1775322450868",
       "mfaEnabled": true,
       "mfaMethod": "authenticator_app",
       "accessGrants": []
@@ -44,7 +44,7 @@
       "name": "Tom Richards",
       "email": "tom.r@company.com",
       "locked": false,
-      "passwordHash": "hash_v1_ghi",
+      "passwordHash": "hash_reset_1775322512503",
       "mfaEnabled": true,
       "mfaMethod": "authenticator_app",
       "accessGrants": []

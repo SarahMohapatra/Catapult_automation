@@ -9,7 +9,8 @@
     "lint": "next lint",
     "run-demo": "npx tsx demo/index.ts",
     "run-watcher": "npx tsx backend/monitors/watcher.ts",
-    "test-pipeline": "npx tsx scripts/test-pipeline.ts"
+    "test-pipeline": "npx tsx scripts/test-pipeline.ts",
+    "demo-app": "npx tsx server.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.0",

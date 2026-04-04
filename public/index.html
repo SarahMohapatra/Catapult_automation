@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catapult Config Monitor</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --purple: #bc8cff;
+      --orange: #f0883e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { font-size: 15px; font-weight: 700; letter-spacing: 2px; color: var(--blue); }
+    .hdr-right { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0;
+    }
+    .dot.err { background: var(--red); }
+    .dot.fix { background: var(--yellow); animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: .35; } }
+
+    main {
+      flex: 1;
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .panel {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+    }
+    .panel-l { flex: 3; }
+    .panel-r { flex: 2; }
+    .ph {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .badge {
+      font-size: 11px; font-weight: 400;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    #editor {
+      flex: 1;
+      background: var(--bg);
+      color: var(--text);
+      border: none;
+      padding: 16px;
+      font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      tab-size: 2;
+      white-space: pre;
+      overflow: auto;
+    }
+
+    .efoot {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 16px;
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+    }
+    button {
+      padding: 5px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    button:hover { background: var(--border); }
+    .btn-g { background: #238636; border-color: #2ea043; color: #fff; }
+    .btn-g:hover { background: #2ea043; }
+    .sstat { font-size: 12px; color: var(--muted); }
+
+    #log {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .le {
+      padding: 5px 10px;
+      margin-bottom: 3px;
+      border-radius: 5px;
+      font-size: 12px;
+      line-height: 1.5;
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+      border-left: 3px solid transparent;
+      word-break: break-word;
+    }
+    .le .t { color: var(--muted); margin-right: 8px; }
+    .le .lb {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: .5px;
+      margin-right: 6px;
+    }
+    .le.status        { border-left-color: var(--blue);   background: rgba(88,166,255,.06); }
+    .le.status .lb    { color: var(--blue); }
+    .le.issue         { border-left-color: var(--orange); background: rgba(240,136,62,.06); }
+    .le.issue .lb     { color: var(--orange); }
+    .le.thinking      { border-left-color: var(--blue);   background: rgba(88,166,255,.04); color: var(--muted); }
+    .le.thinking .lb  { color: var(--blue); }
+    .le.tool_call     { border-left-color: var(--purple); background: rgba(188,140,255,.06); }
+    .le.tool_call .lb { color: var(--purple); }
+    .le.tool_result        { border-left-color: var(--muted); background: rgba(139,148,158,.04); color: var(--muted); }
+    .le.tool_result .lb    { color: var(--muted); }
+    .le.success       { border-left-color: var(--green);  background: rgba(63,185,80,.06); }
+    .le.success .lb   { color: var(--green); }
+    .le.complete      { border-left-color: var(--green);  background: rgba(63,185,80,.04); }
+    .le.complete .lb  { color: var(--green); }
+    .le.error         { border-left-color: var(--red);    background: rgba(248,81,73,.06); }
+    .le.error .lb     { color: var(--red); }
+    .le.warning       { border-left-color: var(--yellow); background: rgba(210,153,34,.06); }
+    .le.warning .lb   { color: var(--yellow); }
+
+    #log::-webkit-scrollbar, #editor::-webkit-scrollbar { width: 6px; }
+    #log::-webkit-scrollbar-track, #editor::-webkit-scrollbar-track { background: transparent; }
+    #log::-webkit-scrollbar-thumb, #editor::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .empty-log {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">CATAPULT</div>
+    <div class="hdr-right">
+      <div class="dot" id="dot"></div>
+      <span id="stxt">Connecting&hellip;</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="panel panel-l">
+      <div class="ph">
+        Configuration
+        <span class="badge">demo/config.json</span>
+      </div>
+      <textarea id="editor" spellcheck="false"></textarea>
+      <div class="efoot">
+        <button class="btn-g" onclick="saveConfig()">Save Changes</button>
+        <button onclick="triggerCheck()">Check Now</button>
+        <span class="sstat" id="sstat"></span>
+      </div>
+    </div>
+
+    <div class="panel panel-r">
+      <div class="ph">
+        Agent Activity
+        <button onclick="clearLog()" style="padding:2px 10px;font-size:11px">Clear</button>
+      </div>
+      <div id="log">
+        <div class="empty-log" id="empty-msg">Waiting for events&hellip;</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const editor  = document.getElementById('editor');
+    const logEl   = document.getElementById('log');
+    const dot     = document.getElementById('dot');
+    const stxt    = document.getElementById('stxt');
+    const sstat   = document.getElementById('sstat');
+    const emptyMsg = document.getElementById('empty-msg');
+
+    let userEditing = false;
+    let editTimer = null;
+    editor.addEventListener('input', () => {
+      userEditing = true;
+      clearTimeout(editTimer);
+      editTimer = setTimeout(() => { userEditing = false; }, 3000);
+    });
+
+    async function loadConfig() {
+      try {
+        const r = await fetch('/api/config');
+        const c = await r.json();
+        if (!userEditing) editor.value = JSON.stringify(c, null, 2);
+      } catch { addLog('error', 'Failed to load config'); }
+    }
+
+    async function saveConfig() {
+      try {
+        const c = JSON.parse(editor.value);
+        const r = await fetch('/api/config', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(c),
+        });
+        if (!r.ok) throw new Error('Save failed');
+        flash('Saved!', 'var(--green)');
+      } catch (e) {
+        flash(e.message || 'Invalid JSON', 'var(--red)');
+      }
+    }
+
+    function flash(msg, color) {
+      sstat.textContent = msg;
+      sstat.style.color = color;
+      setTimeout(() => { sstat.textContent = ''; }, 2500);
+    }
+
+    async function triggerCheck() {
+      try { await fetch('/api/check', { method: 'POST' }); } catch {}
+    }
+
+    function esc(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function addLog(type, message) {
+      if (emptyMsg) emptyMsg.remove();
+      const el = document.createElement('div');
+      el.className = 'le ' + type;
+      const ts = new Date().toLocaleTimeString();
+      const label = type.replace('_', ' ');
+      el.innerHTML = '<span class="t">' + ts + '</span><span class="lb">' + label + '</span>' + esc(message);
+      logEl.appendChild(el);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function clearLog() {
+      logEl.innerHTML = '';
+    }
+
+    let isFixing = false;
+
+    function connectSSE() {
+      const es = new EventSource('/api/events');
+
+      es.addEventListener('connected', () => {
+        dot.className = 'dot';
+        stxt.textContent = 'Connected';
+        addLog('status', 'Connected to server');
+      });
+
+      es.addEventListener('check', (e) => {
+        const d = JSON.parse(e.data);
+        if (d.healthy) {
+          if (!isFixing) { dot.className = 'dot'; stxt.textContent = 'Healthy'; }
+        } else {
+          dot.className = 'dot fix';
+          stxt.textContent = 'Fixing ' + d.issueCount + ' issue(s)\u2026';
+          isFixing = true;
+        }
+      });
+
+      es.addEventListener('log', (e) => {
+        const d = JSON.parse(e.data);
+        addLog(d.type, d.message);
+      });
+
+      es.addEventListener('step', (e) => {
+        const d = JSON.parse(e.data);
+        let msg = '';
+        if (d.type === 'tool_call') msg = d.toolName + ': ' + (d.content || '').slice(0, 200);
+        else if (d.type === 'tool_result') msg = d.toolName + ': ' + (d.content || '').slice(0, 150);
+        else msg = (d.content || '').slice(0, 250);
+        addLog(d.type, msg);
+      });
+
+      es.addEventListener('config_updated', (e) => {
+        const d = JSON.parse(e.data);
+        if (!userEditing) editor.value = JSON.stringify(d.config, null, 2);
+        dot.className = 'dot';
+        stxt.textContent = 'Healthy';
+        isFixing = false;
+      });
+
+      es.onerror = () => {
+        dot.className = 'dot err';
+        stxt.textContent = 'Disconnected';
+      };
+    }
+
+    loadConfig();
+    connectSSE();
+  </script>
+</body>
+</html>
