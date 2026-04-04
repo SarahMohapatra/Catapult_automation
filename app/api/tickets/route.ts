@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     });
 
     // 3. IMMEDIATELY test the L3 AI logic on the new ticket
-    await processTicket(newTicket.id, "teammate@example.com");
+    await processTicket(newTicket.id, "vikramr.kavalipati@gmail.com");
 
     return NextResponse.json({ success: true, ticket: newTicket }, { status: 201 });
   } catch (error) {
