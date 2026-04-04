@@ -2,8 +2,10 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { createToolCallingAgent, AgentExecutor } from "langchain/agents";
 import { smartModel } from "./model";
 import { l2Tools } from "../tools/l2-tools";
+import { filesystemTools } from "../tools/file-system-tools";
 import { L2_SYSTEM_PROMPT } from "../prompts/l2-system-prompt";
 import { AgentStep } from "./l1-agent";
+
 const allL2Tools = [...l2Tools, ...filesystemTools];
 export interface L2ResolutionResult {
   status: "RESOLVED" | "PARTIALLY_RESOLVED" | "ESCALATE";
