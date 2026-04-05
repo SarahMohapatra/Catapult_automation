@@ -28,6 +28,8 @@ import { bugs, fixBug } from "./demo/bug-injector";
 
 const PORT = 4000;
 const CONFIG_PATH = path.join(process.cwd(), "demo/config.json");
+/** Committed canonical config — reset always prefers this over a corrupted demo/config.json */
+const CONFIG_BASELINE_PATH = path.join(process.cwd(), "demo/config.baseline.json");
 const WORKER_LOGIC_PATH = path.join(process.cwd(), "demo/worker-logic.ts");
 /** Committed canonical source — reset always prefers this over a corrupted worker-logic.ts */
 const WORKER_LOGIC_BASELINE_PATH = path.join(
@@ -71,14 +73,22 @@ function buildPriorAgentContext(
 }
 const CHECK_INTERVAL_MS = 5_000;
 
-// ─── Pristine Snapshots (captured at boot for reset) ────
+// ─── Pristine Snapshots (worker baseline captured at boot for reference) ────
 
-let pristineConfig: any = null;
 let pristineWorkerSource: string | null = null;
 
-try {
-  pristineConfig = JSON.parse(JSON.stringify(JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"))));
-} catch { /* captured on first successful read */ }
+/** Prefer committed baseline so reset works even if config.json was corrupted before boot. */
+function readConfigPristineSnapshot(): any | null {
+  try {
+    if (fs.existsSync(CONFIG_BASELINE_PATH)) {
+      return JSON.parse(fs.readFileSync(CONFIG_BASELINE_PATH, "utf-8"));
+    }
+  } catch { /* baseline missing or unreadable */ }
+  try {
+    return JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8"));
+  } catch { /* file may not exist yet */ }
+  return null;
+}
 
 /** Prefer committed baseline so reset works even if worker-logic.ts was corrupted before boot. */
 function readWorkerPristineSnapshot(): string | null {
@@ -763,11 +773,13 @@ async function checkWorkerLogic(): Promise<DetectedIssue[]> {
 // ─── Reset to Starting Position ─────────────────────────
 
 function resetToStartingPosition() {
-  if (pristineConfig) {
-    writeConfig(pristineConfig);
-    lastConfigHash = configHash(pristineConfig);
-    broadcast("config_updated", { config: pristineConfig });
-    log("info", "Config reset to starting position");
+  const configSnap = readConfigPristineSnapshot();
+  if (configSnap) {
+    const restored = JSON.parse(JSON.stringify(configSnap));
+    writeConfig(restored);
+    lastConfigHash = configHash(restored);
+    broadcast("config_updated", { config: restored });
+    log("info", "Config reset to baseline (demo/config.baseline.json or config.json)");
   }
 
   const workerSnap = readWorkerPristineSnapshot();

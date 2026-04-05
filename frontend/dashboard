@@ -103,7 +103,6 @@
 <div class="hidden md:flex items-center gap-6">
 <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="/">Home</a>
 <a class="text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 pb-1" href="/dashboard">Dashboard</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="#">Docs</a>
 </div>
 </div>
 <div class="flex items-center gap-4">
@@ -125,34 +124,28 @@
 <p id="breezy-health-sub" class="text-blue-50 text-lg max-w-2xl">All core automation nodes are humming. Breezy is currently managing 2,492 background tasks with 0% latency spikes.</p>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<!-- userService Status -->
 <div class="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/10 flex items-center gap-4">
 <div class="w-12 h-12 rounded-full bg-emerald-400/20 flex items-center justify-center text-emerald-300">
-<span class="material-symbols-outlined" data-icon="person_check" style="font-variation-settings: 'FILL' 1;">person_check</span>
+<span class="material-symbols-outlined text-2xl" data-icon="radar" style="font-variation-settings: 'FILL' 1;">radar</span>
 </div>
 <div>
-<div class="text-xs font-semibold uppercase tracking-wider text-blue-100">userService</div>
-<div id="breezy-svc-user" class="text-xl font-bold">Enabled</div>
+<div class="text-xl font-extrabold tracking-widest text-white">DETECT</div>
 </div>
 </div>
-<!-- database status -->
 <div class="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/10 flex items-center gap-4">
 <div class="w-12 h-12 rounded-full bg-blue-300/20 flex items-center justify-center text-blue-100">
-<span class="material-symbols-outlined" data-icon="database" style="font-variation-settings: 'FILL' 1;">database</span>
+<span class="material-symbols-outlined text-2xl" data-icon="bug_report" style="font-variation-settings: 'FILL' 1;">bug_report</span>
 </div>
 <div>
-<div class="text-xs font-semibold uppercase tracking-wider text-blue-100">Database</div>
-<div id="breezy-svc-db" class="text-xl font-bold">Connected <span class="text-sm font-normal opacity-70">(P: 20)</span></div>
+<div class="text-xl font-extrabold tracking-widest text-white">DEBUG</div>
 </div>
 </div>
-<!-- paymentService status -->
 <div class="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/10 flex items-center gap-4">
 <div class="w-12 h-12 rounded-full bg-amber-300/20 flex items-center justify-center text-amber-100">
-<span class="material-symbols-outlined" data-icon="payments" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="material-symbols-outlined text-2xl" data-icon="rocket_launch" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
 </div>
 <div>
-<div class="text-xs font-semibold uppercase tracking-wider text-blue-100">paymentService</div>
-<div id="breezy-svc-pay" class="text-xl font-bold">Running</div>
+<div class="text-xl font-extrabold tracking-widest text-white">DEPLOY</div>
 </div>
 </div>
 </div>
@@ -212,25 +205,6 @@
 </a>
 </div>
 </div>
-<!-- Metric Section -->
-<section class="grid grid-cols-1 md:grid-cols-4 gap-8">
-<div class="bg-surface-container-low p-8 rounded-lg flex flex-col gap-2">
-<span class="text-on-surface-variant text-sm font-medium">Uptime</span>
-<span class="text-4xl font-black text-primary">99.99%</span>
-</div>
-<div class="bg-surface-container-low p-8 rounded-lg flex flex-col gap-2">
-<span class="text-on-surface-variant text-sm font-medium">Total Runs</span>
-<span class="text-4xl font-black text-primary">1.2M</span>
-</div>
-<div class="bg-surface-container-low p-8 rounded-lg flex flex-col gap-2">
-<span class="text-on-surface-variant text-sm font-medium">Auto-Resolutions</span>
-<span class="text-4xl font-black text-primary">84%</span>
-</div>
-<div class="bg-surface-container-low p-8 rounded-lg flex flex-col gap-2">
-<span class="text-on-surface-variant text-sm font-medium">Saved Dev Hours</span>
-<span class="text-4xl font-black text-primary">420h</span>
-</div>
-</section>
 </main>
 <!-- Footer (Shared Component) -->
 <footer class="w-full py-12 mt-auto bg-slate-50 dark:bg-slate-950">

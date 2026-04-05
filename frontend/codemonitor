@@ -101,7 +101,6 @@
 <div class="hidden md:flex gap-6 items-center">
 <a class="text-slate-500 dark:text-slate-400 font-['Plus_Jakarta_Sans'] font-medium hover:text-blue-600 transition-colors duration-300" href="/">Home</a>
 <a class="text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 pb-1 font-['Plus_Jakarta_Sans'] font-medium transition-colors duration-300" href="/dashboard">Dashboard</a>
-<a class="text-slate-500 dark:text-slate-400 font-['Plus_Jakarta_Sans'] font-medium hover:text-blue-600 transition-colors duration-300" href="#">Docs</a>
 </div>
 </div>
 <div class="flex items-center gap-4">

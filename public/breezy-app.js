@@ -201,27 +201,6 @@
 
   function applyConfigToDashboardHero(cfg) {
     if (!cfg) return;
-    var userEl = document.getElementById("breezy-svc-user");
-    if (userEl)
-      userEl.textContent = cfg.userService && cfg.userService.enabled
-        ? "Enabled"
-        : "Disabled";
-    var dbEl = document.getElementById("breezy-svc-db");
-    if (dbEl) {
-      var pool = cfg.database && cfg.database.poolSize != null ? cfg.database.poolSize : "—";
-      dbEl.textContent =
-        cfg.database && cfg.database.connected
-          ? "Connected (P: " + pool + ")"
-          : "Disconnected";
-    }
-    var payEl = document.getElementById("breezy-svc-pay");
-    if (payEl) {
-      var ok =
-        cfg.paymentService &&
-        cfg.paymentService.apiKey &&
-        cfg.paymentService.apiKey.length > 0;
-      payEl.textContent = ok ? "Running" : "Degraded";
-    }
     var title = document.getElementById("breezy-health-title");
     var sub = document.getElementById("breezy-health-sub");
     if (title && sub) {

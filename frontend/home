@@ -106,7 +106,6 @@
 <div class="hidden md:flex gap-6">
 <a class="text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 pb-1 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="/">Home</a>
 <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="/dashboard">Dashboard</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="#">Docs</a>
 </div>
 </div>
 <div class="flex items-center gap-4">
@@ -139,14 +138,6 @@
 <a class="px-10 py-4 rounded-xl bg-surface-container-low text-primary font-bold border-2 border-transparent hover:border-primary-container/20 transition-all inline-block text-center" href="/console">
                             Open pipeline console
                         </a>
-</div>
-<div class="flex items-center gap-6 pt-8 grayscale opacity-60">
-<span class="text-sm font-label font-bold uppercase tracking-widest text-outline">Trusted by teams at</span>
-<div class="flex gap-8">
-<div class="h-6 w-24 bg-surface-container-highest rounded-full"></div>
-<div class="h-6 w-20 bg-surface-container-highest rounded-full"></div>
-<div class="h-6 w-28 bg-surface-container-highest rounded-full"></div>
-</div>
 </div>
 </div>
 <!-- Hero Illustration / 3D Abstract -->
