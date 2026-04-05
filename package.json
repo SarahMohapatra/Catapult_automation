@@ -9,8 +9,13 @@
     "lint": "next lint",
     "run-demo": "npx tsx demo/index.ts",
     "run-watcher": "npx tsx backend/monitors/watcher.ts",
+    "run-worker": "npx tsx demo/worker.ts",
     "test-pipeline": "npx tsx scripts/test-pipeline.ts",
-    "demo-app": "npx tsx server.ts"
+    "demo-app": "npx tsx server.ts",
+    "auto-simulation": "npx tsx scripts/auto-simulation.ts",
+    "inject-bug": "npx tsx scripts/inject-bug.ts",
+    "mutate-worker": "npx tsx scripts/mutate-worker.ts",
+    "live-bug-demo": "npx tsx scripts/live-bug-demo.ts"
   },
   "dependencies": {
     "@langchain/core": "^0.3.0",

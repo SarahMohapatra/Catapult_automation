@@ -210,6 +210,12 @@ pnpm-debug.log*
 .cursorignore
 .cursorindexingignore
 
+# Demo sandbox / eval artifacts
+demo/.eval/
+demo/worker-logic.sandbox.ts
+demo/worker.log
+demo/app.log
+
 # Marimo
 marimo/_static/
 marimo/_lsp/

@@ -219,6 +219,7 @@
       <span><span id="statusDot" class="status-dot healthy"></span><span id="statusText">Healthy</span></span>
       <button onclick="triggerCheck()">Run Check</button>
       <button class="primary" onclick="showModal('injectModal')">Inject Fault</button>
+      <button class="danger" id="resetBtn" onclick="resetSystem()">Reset System</button>
     </div>
   </header>
 
@@ -248,11 +249,12 @@
       </div>
     </div>
 
-    <!-- Right: Tabbed view (Detail / Config Editor) + Logs -->
+    <!-- Right: Tabbed view (Detail / Config Editor / Code Editor) + Logs -->
     <div class="panel">
       <div class="view-tabs">
         <div class="view-tab active" onclick="setView('detail',this)">Ticket Detail</div>
         <div class="view-tab" onclick="setView('editor',this)">Config Editor</div>
+        <div class="view-tab" onclick="setView('code',this)">Code Editor</div>
       </div>
 
       <!-- Tab: Ticket Detail -->
@@ -274,6 +276,20 @@
         </div>
       </div>
 
+      <!-- Tab: Code Editor -->
+      <div class="panel-body" id="viewCode" style="display:none;">
+        <div class="config-editor-wrap">
+          <div class="config-editor-toolbar">
+            <button class="success" onclick="saveCode()">Save Code</button>
+            <button onclick="resetCodeEditor()">Reset</button>
+            <div class="spacer"></div>
+            <span class="dirty-badge" id="codeDirtyBadge" style="display:none;">Unsaved changes</span>
+          </div>
+          <textarea id="codeTextarea" spellcheck="false" style="font-size:12px;"></textarea>
+          <div class="config-error" id="codeError"></div>
+        </div>
+      </div>
+
       <!-- Activity Log (always visible below) -->
       <div class="panel-header" style="border-top:1px solid var(--border);">
         <h2>Activity Log</h2>
@@ -288,7 +304,8 @@
   <!-- ── Inject Fault modal ──────────────────────────── -->
   <div class="modal-overlay" id="injectModal">
     <div class="modal-box">
-      <h3>Inject Config Fault</h3>
+      <h3>Inject Fault</h3>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Config Faults</div>
       <div style="display:flex; flex-direction:column; gap:8px;">
         <button onclick="injectFault('lock_user')">Lock a user account (L1)</button>
         <button onclick="injectFault('disable_mfa')">Disable user MFA (L1)</button>
@@ -299,7 +316,19 @@
         <button onclick="injectFault('crash_services')">Crash 3 services (L3)</button>
         <button onclick="injectFault('total_db_failure')">Total DB failure (L3)</button>
       </div>
-      <button style="margin-top:16px; width:100%;" onclick="hideModals()">Cancel</button>
+      <div style="font-size:11px;color:var(--text2);margin:14px 0 10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Code Bugs (worker-logic.ts)</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button onclick="injectCodeBug('l1-divide-zero')">Division by Zero — maxValue=0 (L1)</button>
+        <button onclick="injectCodeBug('l1-negative-discount')">Negative Discount — sign flipped (L1)</button>
+        <button onclick="injectCodeBug('l1-commented-return')">Missing Return — commented out (L1)</button>
+        <button onclick="injectCodeBug('l2-inverted-condition')">Inverted Condition — rejects valid (L2)</button>
+        <button onclick="injectCodeBug('l2-wrong-operator')">Wrong Operator — * replaced with / (L2)</button>
+        <button onclick="injectCodeBug('l2-wrong-filter')">Inverted Filter — stock logic reversed (L2)</button>
+      </div>
+      <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+        <button style="width:100%; background:var(--surface2); color:var(--green);" onclick="resetWorkerCode()">Reset Worker to Clean State</button>
+      </div>
+      <button style="margin-top:8px; width:100%;" onclick="hideModals()">Cancel</button>
     </div>
   </div>
 
@@ -309,9 +338,11 @@
 let tickets = [];
 let selectedId = null;
 let currentFilter = "all";
-let currentView = "detail";    // "detail" | "editor"
+let currentView = "detail";    // "detail" | "editor" | "code"
 let serverConfig = {};         // latest config from server
-let editorDirty = false;       // user has unsaved edits
+let serverCode = "";           // latest worker-logic.ts from server
+let editorDirty = false;       // user has unsaved config edits
+let codeDirty = false;         // user has unsaved code edits
 
 // ── SSE ──────────────────────────────────────────────
 
@@ -320,6 +351,7 @@ const es = new EventSource("/api/events");
 es.addEventListener("connected", (e) => {
   const data = JSON.parse(e.data);
   if (data.tickets) { tickets = data.tickets; render(); }
+  if (data.workerSource) syncCode(data.workerSource);
 });
 es.addEventListener("ticket_created", (e) => {
   const { ticket } = JSON.parse(e.data);
@@ -333,6 +365,7 @@ es.addEventListener("pipeline_complete", (e) => {
   const data = JSON.parse(e.data);
   tickets = data.tickets;
   if (data.config) syncConfig(data.config);
+  if (data.workerSource) syncCode(data.workerSource);
   render();
 });
 es.addEventListener("config_updated", (e) => {
@@ -342,6 +375,14 @@ es.addEventListener("config_updated", (e) => {
 es.addEventListener("config_snapshot", (e) => {
   const data = JSON.parse(e.data);
   if (data.config) syncConfig(data.config);
+});
+es.addEventListener("code_snapshot", (e) => {
+  const data = JSON.parse(e.data);
+  if (data.source) syncCode(data.source);
+});
+es.addEventListener("code_updated", (e) => {
+  const data = JSON.parse(e.data);
+  if (data.source) syncCode(data.source);
 });
 es.addEventListener("check", (e) => {
   const data = JSON.parse(e.data);
@@ -356,6 +397,18 @@ es.addEventListener("check", (e) => {
 es.addEventListener("log", (e) => {
   const data = JSON.parse(e.data);
   addLog(data.type, data.message);
+});
+es.addEventListener("monitoring_paused", (e) => {
+  const dot = document.getElementById("statusDot");
+  const txt = document.getElementById("statusText");
+  dot.className = "status-dot unhealthy";
+  txt.textContent = "Paused — L3 Escalation";
+});
+es.addEventListener("monitoring_resumed", () => {
+  const dot = document.getElementById("statusDot");
+  const txt = document.getElementById("statusText");
+  dot.className = "status-dot healthy";
+  txt.textContent = "Healthy";
 });
 
 function upsertTicket(t) {
@@ -464,7 +517,9 @@ function setView(view, tabEl) {
   tabEl.classList.add("active");
   document.getElementById("viewDetail").style.display = view === "detail" ? "" : "none";
   document.getElementById("viewEditor").style.display = view === "editor" ? "" : "none";
+  document.getElementById("viewCode").style.display = view === "code" ? "" : "none";
   if (view === "editor" && !editorDirty) loadConfigIntoEditor();
+  if (view === "code" && !codeDirty) loadCodeIntoEditor();
 }
 
 // ── Config Editor actions ────────────────────────────
@@ -476,6 +531,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dirtyBadge").style.display = "";
     try { JSON.parse(ta.value); ta.classList.remove("invalid"); document.getElementById("configError").textContent = ""; }
     catch (e) { ta.classList.add("invalid"); document.getElementById("configError").textContent = "Invalid JSON: " + e.message; }
+  });
+  const codeTa = document.getElementById("codeTextarea");
+  codeTa.addEventListener("input", () => {
+    codeDirty = true;
+    document.getElementById("codeDirtyBadge").style.display = "";
   });
 });
 
@@ -503,6 +563,62 @@ async function saveConfig() {
 function resetEditor() {
   loadConfigIntoEditor();
   addLog("info", "Editor reset to server state");
+}
+
+// ── Code sync ────────────────────────────────────────
+
+function syncCode(src, force) {
+  serverCode = src;
+  if (force || !codeDirty) loadCodeIntoEditor();
+}
+
+function loadCodeIntoEditor() {
+  const ta = document.getElementById("codeTextarea");
+  if (ta) ta.value = serverCode;
+  codeDirty = false;
+  const badge = document.getElementById("codeDirtyBadge");
+  if (badge) badge.style.display = "none";
+  document.getElementById("codeError").textContent = "";
+}
+
+async function saveCode() {
+  const ta = document.getElementById("codeTextarea");
+  try {
+    const r = await fetch("/api/code", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source: ta.value }),
+    });
+    if (!r.ok) throw new Error((await r.json()).error || "Save failed");
+    codeDirty = false;
+    document.getElementById("codeDirtyBadge").style.display = "none";
+    addLog("info", "Code saved from editor");
+  } catch (e) {
+    document.getElementById("codeError").textContent = "Save error: " + e.message;
+  }
+}
+
+async function resetCodeEditor() {
+  try {
+    const resp = await fetch("/api/code/reset", { method: "POST" });
+    const data = await resp.json();
+    if (!data.ok) {
+      document.getElementById("codeError").textContent = data.error || "Reset failed";
+      addLog("error", `Reset failed: ${data.error || "unknown"}`);
+      return;
+    }
+    if (data.source) syncCode(data.source, true);
+    document.getElementById("codeError").textContent = "";
+    addLog(
+      "success",
+      data.pristine
+        ? "Code editor restored to original worker-logic.ts (pristine snapshot)"
+        : `Code editor reset (${data.restored} catalog bug fix(es) applied)`
+    );
+  } catch (e) {
+    document.getElementById("codeError").textContent = "Reset failed: " + e.message;
+    addLog("error", `Reset failed: ${e.message}`);
+  }
 }
 
 // ── Helpers ──────────────────────────────────────────
@@ -554,6 +670,17 @@ async function triggerCheck() {
   catch(e){addLog("error",e.message);}
 }
 
+async function resetSystem() {
+  try {
+    const r = await fetch("/api/reset", { method: "POST" });
+    if (!r.ok) { const d = await r.json(); addLog("warn", d.error || "Reset failed"); return; }
+    tickets = [];
+    selectedId = null;
+    render();
+    addLog("success", "System reset to starting position — monitoring resumed");
+  } catch(e) { addLog("error", `Reset failed: ${e.message}`); }
+}
+
 async function injectFault(type) {
   hideModals();
   try {
@@ -569,8 +696,66 @@ async function injectFault(type) {
       case "total_db_failure": config.database.connected=false; config.database.poolSize=0; break;
     }
     await fetch("/api/config",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(config)});
-    addLog("info",`Fault injected: ${type}`);
+    addLog("info",`Config fault injected: ${type}`);
   } catch(e) { addLog("error",`Inject failed: ${e.message}`); }
+}
+
+const CODE_BUGS = {
+  "l1-divide-zero":         { target: "  const maxValue = 100;",  buggy: "  const maxValue = 0;" },
+  "l1-negative-discount":   { target: "  const discount = 10;",   buggy: "  const discount = -10;" },
+  "l1-commented-return":    { target: "  const subtotal = orders.reduce((sum, price) => sum + price, 0);", buggy: "  // const subtotal = orders.reduce((sum, price) => sum + price, 0);" },
+  "l2-inverted-condition":  { target: "  if (activityPoints < 0) {", buggy: "  if (activityPoints > 0) {" },
+  "l2-wrong-operator":      { target: "  return activityPoints * multiplier;", buggy: "  return activityPoints / multiplier;" },
+  "l2-wrong-filter":        { target: "  const lowStock = items.filter((item) => item.stock < item.minimum);", buggy: "  const lowStock = items.filter((item) => item.stock > item.minimum);" },
+};
+
+async function resetWorkerCode() {
+  hideModals();
+  try {
+    const resp = await fetch("/api/code/reset", { method: "POST" });
+    const data = await resp.json();
+    if (data.ok) {
+      if (data.source) syncCode(data.source, true);
+      addLog(
+        "success",
+        data.pristine
+          ? "Worker code restored to original (pristine snapshot)"
+          : `Worker code reset (${data.restored} catalog bug fix(es) applied)`
+      );
+    } else {
+      addLog("error", `Reset failed: ${data.error}`);
+    }
+  } catch(e) { addLog("error", `Reset failed: ${e.message}`); }
+}
+
+async function injectCodeBug(bugId) {
+  hideModals();
+  try {
+    const bug = CODE_BUGS[bugId];
+    if (!bug) { addLog("error", "Unknown bug ID: " + bugId); return; }
+
+    let r = await fetch("/api/code");
+    let { source } = await r.json();
+
+    if (source.includes(bug.buggy)) {
+      addLog("info", "Resetting worker to clean state first...");
+      const resetResp = await fetch("/api/code/reset", { method: "POST" });
+      const resetData = await resetResp.json();
+      if (!resetData.ok) { addLog("error", `Reset failed: ${resetData.error}`); return; }
+      source = resetData.source;
+      if (source) syncCode(source, true);
+    }
+
+    if (!source.includes(bug.target)) {
+      addLog("error", `Cannot inject "${bugId}": clean target line not found even after reset`);
+      return;
+    }
+
+    const corrupted = source.replace(bug.target, bug.buggy);
+    await fetch("/api/code", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ source: corrupted }) });
+    syncCode(corrupted);
+    addLog("info", `Code bug injected: ${bugId} — pipeline will detect it within ~5s`);
+  } catch(e) { addLog("error", `Code inject failed: ${e.message}`); }
 }
 
 // ── Init ─────────────────────────────────────────────
@@ -580,6 +765,13 @@ async function injectFault(type) {
     tickets = await (await fetch("/api/tickets")).json();
     serverConfig = await (await fetch("/api/config")).json();
     loadConfigIntoEditor();
+    try {
+      const codeResp = await fetch("/api/code");
+      if (codeResp.ok) {
+        const { source } = await codeResp.json();
+        syncCode(source);
+      }
+    } catch {}
     render();
   } catch {}
 })();

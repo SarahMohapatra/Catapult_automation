@@ -19,6 +19,7 @@ export interface IncidentReport {
 
 const DOC_SYSTEM_PROMPT = `
 You are an IT documentation specialist. Generate a concise incident report based on the resolution data provided.
+If Tier is L3 or Resolution Status is ESCALATED, reflect that the issue was escalated to humans and align rootCauseHypothesis with the evidence (e.g. empty file vs single typo) when the steps or final output support it.
 Respond ONLY with valid JSON matching this shape:
 {
   "rootCauseHypothesis": "string - your best assessment of why this issue occurred",

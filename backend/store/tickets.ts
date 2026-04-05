@@ -125,4 +125,9 @@ export function hasActiveTicketForIssue(title: string): boolean {
   );
 }
 
+export function clearAllTickets(): void {
+  tickets.clear();
+  persist();
+}
+
 loadTickets();

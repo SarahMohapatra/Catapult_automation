@@ -1,5 +1,68 @@
 {
+  "userService": {
+    "enabled": true,
+    "maxUsers": 1000
+  },
   "paymentService": {
-    "apiKey": "pk_demo_abc123xyz"
+    "apiKey": "pk_demo_abc123xyz",
+    "timeout": 5000
+  },
+  "emailService": {
+    "smtpHost": "smtp.gmail.com",
+    "rateLimit": 100
+  },
+  "database": {
+    "connected": true,
+    "poolSize": 20
+  },
+  "users": {
+    "USR-4421": {
+      "name": "Sarah Johnson",
+      "email": "sarah.j@company.com",
+      "locked": false,
+      "passwordHash": "hash_reset_1775324458628",
+      "mfaEnabled": true,
+      "mfaMethod": "authenticator_app",
+      "accessGrants": []
+    },
+    "USR-7821": {
+      "name": "Priya Patel",
+      "email": "priya.p@company.com",
+      "locked": false,
+      "passwordHash": "hash_v1_def",
+      "mfaEnabled": true,
+      "mfaMethod": "sms",
+      "accessGrants": [
+        {
+          "resource": "analytics-dashboard",
+          "level": "read",
+          "grantedAt": "2024-01-01T00:00:00.000Z"
+        }
+      ]
+    },
+    "USR-3312": {
+      "name": "Tom Richards",
+      "email": "tom.r@company.com",
+      "locked": false,
+      "passwordHash": "hash_reset_1775322512503",
+      "mfaEnabled": true,
+      "mfaMethod": "authenticator_app",
+      "accessGrants": []
+    }
+  },
+  "services": {
+    "PaymentService": {
+      "status": "RUNNING"
+    },
+    "AuthService": {
+      "status": "RUNNING"
+    },
+    "EmailService": {
+      "status": "RUNNING",
+      "lastRestart": "2026-04-04T22:32:38.783Z"
+    },
+    "DatabaseService": {
+      "status": "RUNNING"
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { smartModel } from "./model";
+import type { AgentStep } from "./l1-agent";
 
 export interface EscalationReport {
   summary: string;
@@ -7,6 +8,18 @@ export interface EscalationReport {
   suggestedActions: string[];
   urgencyLevel: "high" | "critical";
   estimatedImpact: string;
+}
+
+/** Context from L1/L2 when automation failed and the ticket is promoted to L3. */
+export interface PriorAgentContext {
+  priorTier: "L1" | "L2";
+  /** Tier from initial classification (before L3 reclassification). */
+  intakeClassificationTier: string;
+  finalOutput: string;
+  stepsSummary: string;
+  incidentReportSummary?: string;
+  /** Preserved for the ticket UI; not sent as duplicate text to the model beyond stepsSummary. */
+  steps?: AgentStep[];
 }
 
 const ESCALATION_SYSTEM_PROMPT = `
@@ -17,6 +30,8 @@ Your job is to:
 2. Explain exactly why this cannot be auto-resolved.
 3. Provide 3 concrete, actionable steps a human engineer should take immediately.
 4. Assess urgency and estimated impact.
+
+When "Prior automated agent context" is included in the user message, ground your summary and root-cause wording in that evidence. Do not reduce an empty file, deleted module body, or unloadable module to "a minor syntax typo" if the evidence shows structural failure or missing source.
 
 Respond ONLY with valid JSON matching this exact shape:
 {
@@ -31,12 +46,28 @@ Respond ONLY with valid JSON matching this exact shape:
 export async function runEscalationHandler(
   title: string,
   description: string,
-  category: string
+  category: string,
+  priorAgent?: PriorAgentContext
 ): Promise<EscalationReport> {
+  const priorBlock = priorAgent
+    ? `
+
+Prior automated agent (before human escalation):
+- Agent tier: ${priorAgent.priorTier}
+- Intake classification tier: ${priorAgent.intakeClassificationTier}
+${priorAgent.incidentReportSummary ? `- Pre-escalation incident summary:\n${priorAgent.incidentReportSummary}\n` : ""}
+- Final agent message:
+${priorAgent.finalOutput}
+
+Prior agent steps (tool traces):
+${priorAgent.stepsSummary}
+`
+    : "";
+
   const response = await smartModel.invoke([
     new SystemMessage(ESCALATION_SYSTEM_PROMPT),
     new HumanMessage(
-      `Issue Title: ${title}\nCategory: ${category}\nDescription: ${description}`
+      `Issue Title: ${title}\nCategory: ${category}\nDescription: ${description}${priorBlock}`
     ),
   ]);
 

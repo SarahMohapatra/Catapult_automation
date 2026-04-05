@@ -41,7 +41,7 @@ export async function runL2Agent(
   const executor = new AgentExecutor({
     agent,
     tools: allL2Tools,
-    maxIterations: 6,
+    maxIterations: 14,
     returnIntermediateSteps: true,
     verbose: false,
   });
