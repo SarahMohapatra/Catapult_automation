@@ -36,6 +36,8 @@ const WORKER_LOGIC_BASELINE_PATH = path.join(
 );
 const WORKER_LOG_PATH = path.join(process.cwd(), "demo/worker.log");
 const HTML_PATH = path.join(process.cwd(), "public/index.html");
+const FRONTEND_DIR = path.join(process.cwd(), "frontend");
+const BREEZY_JS_PATH = path.join(process.cwd(), "public/breezy-app.js");
 
 const MAX_ESCALATION_STEPS_CHARS = 15_000;
 
@@ -606,6 +608,45 @@ async function handleL2(ticket: Ticket, issue: DetectedIssue): Promise<Ticket> {
   return ticket;
 }
 
+// ─── L3 escalation email (Resend) ───────────────────────
+
+async function sendL3EscalationEmail(ticket: Ticket): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const to = process.env.RESEND_ALERT_TO_EMAIL?.trim();
+  const from =
+    process.env.RESEND_FROM_EMAIL?.trim() || "onboarding@resend.dev";
+  if (!apiKey || !to) {
+    return;
+  }
+  const payload = JSON.stringify(ticket, null, 2);
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject: `[L3 Escalation] ${ticket.id} — ${ticket.title}`,
+        text: `L3 escalation — full ticket JSON:\n\n${payload}`,
+      }),
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      log("warn", `[L3] Resend failed (${res.status}): ${errText}`);
+    } else {
+      log("info", `[L3] Escalation email sent for ${ticket.id}`);
+    }
+  } catch (err) {
+    log(
+      "warn",
+      `[L3] Resend error: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+}
+
 // ─── L3 Handler (Escalation — needs human review) ───────
 
 async function handleL3(
@@ -657,6 +698,7 @@ async function handleL3(
 
   broadcast("ticket_updated", { ticket });
   log("warn", `[L3] ${ticket.id}: needs_human_review`);
+  await sendL3EscalationEmail(ticket);
   return ticket;
 }
 
@@ -874,16 +916,50 @@ const server = http.createServer(async (req, res) => {
 
   const url = req.url || "/";
 
-  // ── Dashboard ─────────────────────────────────────────
+  // ── Breezy static JS ──────────────────────────────────
 
-  if (req.method === "GET" && url === "/") {
+  if (req.method === "GET" && url === "/breezy-app.js") {
     try {
-      const html = fs.readFileSync(HTML_PATH, "utf-8");
-      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-      return res.end(html);
+      const js = fs.readFileSync(BREEZY_JS_PATH, "utf-8");
+      res.writeHead(200, { "Content-Type": "application/javascript; charset=utf-8" });
+      return res.end(js);
     } catch {
-      res.writeHead(500, { "Content-Type": "text/plain" });
-      return res.end("Could not load public/index.html");
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      return res.end("Not found");
+    }
+  }
+
+  // ── HTML pages (Breezy frontend + legacy console) ─────
+
+  if (req.method === "GET") {
+    if (url === "/console") {
+      try {
+        const html = fs.readFileSync(HTML_PATH, "utf-8");
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        return res.end(html);
+      } catch {
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        return res.end("Could not load public/index.html");
+      }
+    }
+
+    const breezyPages: Record<string, string> = {
+      "/": "home",
+      "/home": "home",
+      "/dashboard": "dashboard",
+      "/config-monitor": "configmonitor",
+      "/code-monitor": "codemonitor",
+    };
+    const pageFile = breezyPages[url];
+    if (pageFile) {
+      try {
+        const html = fs.readFileSync(path.join(FRONTEND_DIR, pageFile), "utf-8");
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        return res.end(html);
+      } catch {
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        return res.end("Could not load page");
+      }
     }
   }
 
@@ -1056,7 +1132,8 @@ server.listen(PORT, () => {
   console.log("");
   console.log("  Catapult Automation — Config + Code Monitor + Ticket Pipeline");
   console.log("  ─────────────────────────────────────────────────────────────");
-  console.log(`  Dashboard:  http://localhost:${PORT}`);
+  console.log(`  Breezy UI:  http://localhost:${PORT}/  (home)  ·  /dashboard  ·  /config-monitor  ·  /code-monitor`);
+  console.log(`  Console:    http://localhost:${PORT}/console  (legacy Catapult UI)`);
   console.log(`  API:        http://localhost:${PORT}/api/tickets`);
   console.log(`  Code:       http://localhost:${PORT}/api/code`);
   console.log(`  Events:     http://localhost:${PORT}/api/events`);

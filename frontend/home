@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#99cbff",
+                    "surface-variant": "#e0e3e5",
+                    "secondary-fixed": "#c3e8fd",
+                    "inverse-surface": "#2d3133",
+                    "on-tertiary-fixed-variant": "#604100",
+                    "tertiary-container": "#c58800",
+                    "on-surface-variant": "#404751",
+                    "on-background": "#191c1e",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-error": "#ffffff",
+                    "primary-container": "#4299e1",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#446779",
+                    "surface-bright": "#f7f9fb",
+                    "outline": "#707882",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed-variant": "#004a78",
+                    "surface-tint": "#00629d",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f7f9fb",
+                    "on-surface": "#191c1e",
+                    "on-secondary-fixed-variant": "#274b5c",
+                    "outline-variant": "#c0c7d2",
+                    "secondary-container": "#c0e5fa",
+                    "tertiary-fixed": "#ffdeae",
+                    "primary": "#00629d",
+                    "background": "#f7f9fb",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-dim": "#d8dadc",
+                    "inverse-primary": "#99cbff",
+                    "surface-container-high": "#e6e8ea",
+                    "secondary-fixed-dim": "#a7cce0",
+                    "on-primary-container": "#002f4e",
+                    "on-secondary-fixed": "#001e2b",
+                    "secondary": "#3f6375",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#281800",
+                    "tertiary": "#7f5600",
+                    "on-primary-fixed": "#001d34",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#cfe5ff",
+                    "surface-container": "#eceef0",
+                    "surface-container-low": "#f2f4f6",
+                    "on-tertiary-container": "#3e2800",
+                    "tertiary-fixed-dim": "#ffba3f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .breezy-gradient {
+        background: linear-gradient(135deg, #00629d 0%, #4299e1 100%);
+      }
+      .glass-card {
+        background: rgba(224, 227, 229, 0.6);
+        backdrop-filter: blur(20px);
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f7f9fb;
+        color: #191c1e;
+      }
+      h1, h2, h3 {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,98,157,0.08)]">
+<nav class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto font-['Plus_Jakarta_Sans'] font-medium">
+<div class="flex items-center gap-8">
+<a class="text-2xl font-bold tracking-tight bg-gradient-to-br from-blue-700 to-blue-400 bg-clip-text text-transparent" href="/">Breezy</a>
+<div class="hidden md:flex gap-6">
+<a class="text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 pb-1 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="/">Home</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="/dashboard">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="#">Docs</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<a class="px-6 py-2 rounded-full breezy-gradient text-white font-semibold scale-95 active:scale-90 transition-transform inline-block text-center" href="/console">Try Demo</a>
+</div>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative overflow-hidden min-vh-[819px] flex items-center pt-24 pb-32">
+<!-- Background Atmospheric Elements -->
+<div class="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-primary-fixed opacity-30 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-secondary-fixed opacity-20 blur-[100px] rounded-full"></div>
+<div class="max-w-screen-2xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+<div class="space-y-8">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-sm font-medium">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">auto_mode</span>
+                        LLM-Powered IT Operations
+                    </div>
+<h1 class="text-6xl md:text-7xl font-extrabold tracking-tight text-on-surface leading-[1.1]">
+                        IT Ops on <span class="bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Autopilot</span>
+</h1>
+<p class="text-xl md:text-2xl text-on-surface-variant font-light leading-relaxed max-w-xl">
+                        Automate L1/L2 Resolution with Breezy. LLM-driven incident repair that monitors config, fixes defects, and manages tickets—effortlessly.
+                    </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<a class="px-10 py-4 rounded-xl breezy-gradient text-white text-lg font-bold shadow-lg hover:shadow-primary-container/40 transition-all scale-100 active:scale-95 inline-block text-center" href="/dashboard">
+                            Try Interactive Demo
+                        </a>
+<a class="px-10 py-4 rounded-xl bg-surface-container-low text-primary font-bold border-2 border-transparent hover:border-primary-container/20 transition-all inline-block text-center" href="/console">
+                            Open pipeline console
+                        </a>
+</div>
+<div class="flex items-center gap-6 pt-8 grayscale opacity-60">
+<span class="text-sm font-label font-bold uppercase tracking-widest text-outline">Trusted by teams at</span>
+<div class="flex gap-8">
+<div class="h-6 w-24 bg-surface-container-highest rounded-full"></div>
+<div class="h-6 w-20 bg-surface-container-highest rounded-full"></div>
+<div class="h-6 w-28 bg-surface-container-highest rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Hero Illustration / 3D Abstract -->
+<div class="relative">
+<div class="glass-card p-4 rounded-xl shadow-[0_40px_80px_rgba(0,98,157,0.12)] border border-white/40">
+<img class="w-full h-auto rounded-lg" data-alt="abstract 3d geometric shapes in soft blue and white colors floating in a clean white space representing cloud computing and automation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLNIbvEkBfO0Rkxc9i1TTd1HbxdiuItHHmcu_GBRrou0q_y6fkqZqtsdpLCQ7Lw5S1sD_cAvWgz3gizqJUQVSHKwL4f7us2tIAPBpL7-JJdB7yWHwvLMS3sNqoNqqzCyfs6-VlACNth9WFPur2yi876qpszTbS0BSsENYNqohkM13YhuMP8UBMn39IbKrskfm5vId694MGgl3VUwVjJM4LK_0v8xqiGmEfcmQycdRmUNFLFV9dAlQSLSl7YrjA8qPmJWY_S7vMit1H"/>
+</div>
+<!-- Floating Logic Map -->
+<div class="absolute -bottom-10 -left-10 glass-card px-6 py-4 rounded-xl shadow-xl border border-white/60 hidden md:block">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">hub</span>
+</div>
+<div>
+<p class="text-xs font-label text-on-surface-variant">Active Pipelines</p>
+<p class="text-lg font-bold text-on-surface">Real-time sync</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="py-32 bg-surface-container-low">
+<div class="max-w-screen-2xl mx-auto px-8">
+<div class="text-center mb-20 space-y-4">
+<h2 class="text-4xl md:text-5xl font-bold tracking-tight text-on-surface">Effortless Automation Stack</h2>
+<p class="text-lg text-on-surface-variant max-w-2xl mx-auto">Everything you need to move from manual firefighting to autonomous IT orchestration.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Config Monitor -->
+<div class="group surface-container-lowest p-10 rounded-xl hover:shadow-[0_20px_40px_rgba(0,98,157,0.06)] transition-all duration-500 flex flex-col items-start gap-6 border-b-4 border-transparent hover:border-primary">
+<div class="w-14 h-14 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">visibility</span>
+</div>
+<div class="space-y-4">
+<h3 class="text-2xl font-bold text-on-surface">Config Monitor</h3>
+<p class="text-on-surface-variant leading-relaxed">Continuous health tracking of your entire infrastructure. Breezy detects drift before it becomes a ticket.</p>
+</div>
+<a class="mt-auto inline-flex items-center gap-2 text-primary font-semibold group-hover:translate-x-2 transition-transform" href="/config-monitor">
+                            Learn more <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+<!-- Ticket Pipeline -->
+<div class="group surface-container-lowest p-10 rounded-xl hover:shadow-[0_20px_40px_rgba(0,98,157,0.06)] transition-all duration-500 flex flex-col items-start gap-6 border-b-4 border-transparent hover:border-secondary">
+<div class="w-14 h-14 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-3xl">confirmation_number</span>
+</div>
+<div class="space-y-4">
+<h3 class="text-2xl font-bold text-on-surface">Ticket Pipeline</h3>
+<p class="text-on-surface-variant leading-relaxed">Integrated LLM agents that read, categorize, and execute resolution workflows directly in your ITSM.</p>
+</div>
+<a class="mt-auto inline-flex items-center gap-2 text-primary font-semibold group-hover:translate-x-2 transition-transform" href="/dashboard">
+                            Learn more <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+<!-- Code Repair -->
+<div class="group surface-container-lowest p-10 rounded-xl hover:shadow-[0_20px_40px_rgba(0,98,157,0.06)] transition-all duration-500 flex flex-col items-start gap-6 border-b-4 border-transparent hover:border-tertiary">
+<div class="w-14 h-14 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-3xl">handyman</span>
+</div>
+<div class="space-y-4">
+<h3 class="text-2xl font-bold text-on-surface">Code Repair</h3>
+<p class="text-on-surface-variant leading-relaxed">Autonomous defect patching and configuration fixes. Validate, deploy, and verify without lifting a finger.</p>
+</div>
+<a class="mt-auto inline-flex items-center gap-2 text-primary font-semibold group-hover:translate-x-2 transition-transform" href="/code-monitor">
+                            Learn more <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24">
+<div class="max-w-4xl mx-auto px-8 text-center bg-surface-container-high p-16 rounded-xl relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-fixed opacity-20 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2"></div>
+<h2 class="text-4xl md:text-5xl font-bold tracking-tight text-on-surface mb-6 relative z-10">Ready for a breezy IT life?</h2>
+<p class="text-xl text-on-surface-variant mb-10 relative z-10">Join 500+ enterprises automating their L1/L2 support with our LLM orchestration engine.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
+<a class="px-10 py-4 rounded-xl breezy-gradient text-white text-lg font-bold shadow-lg inline-block text-center" href="/dashboard">Start Free Trial</a>
+<a class="px-10 py-4 rounded-xl bg-surface-container-lowest text-on-surface font-bold hover:bg-surface-bright transition-colors inline-block text-center" href="/config-monitor">Config monitor</a>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 mt-auto bg-slate-50 dark:bg-slate-950 font-['Inter'] text-sm">
+<div class="max-w-screen-2xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+<div class="space-y-4">
+<div class="text-lg font-semibold text-slate-800 dark:text-slate-200">Breezy</div>
+<p class="text-slate-500 dark:text-slate-400">© 2024 Breezy Automation. Effortless by design.</p>
+</div>
+<div class="flex flex-wrap md:justify-end gap-x-8 gap-y-4 text-slate-500">
+<a class="hover:text-blue-500 transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="hover:text-blue-500 transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="hover:text-blue-500 transition-colors opacity-80 hover:opacity-100" href="#">Security</a>
+<a class="hover:text-blue-500 transition-colors opacity-80 hover:opacity-100" href="#">Status</a>
+</div>
+</div>
+</footer>
+<script src="/breezy-app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.Breezy) Breezy.init("home");
+});
+</script>
+</body></html>

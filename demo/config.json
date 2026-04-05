@@ -52,17 +52,17 @@
   },
   "services": {
     "PaymentService": {
-      "status": "RUNNING"
+      "status": "CRASHED"
     },
     "AuthService": {
-      "status": "RUNNING"
+      "status": "CRASHED"
     },
     "EmailService": {
-      "status": "RUNNING",
+      "status": "CRASHED",
       "lastRestart": "2026-04-04T22:32:38.783Z"
     },
     "DatabaseService": {
-      "status": "RUNNING"
+      "status": "CRASHED"
     }
   }
 }

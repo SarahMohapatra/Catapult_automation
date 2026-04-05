@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Code Defect Lab | Breezy</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary": "#7f5600",
+                        "secondary-container": "#c0e5fa",
+                        "primary-container": "#4299e1",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-container": "#eceef0",
+                        "on-tertiary-fixed-variant": "#604100",
+                        "on-tertiary-fixed": "#281800",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline": "#707882",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#00629d",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary-container": "#3e2800",
+                        "secondary": "#3f6375",
+                        "on-surface": "#191c1e",
+                        "secondary-fixed-dim": "#a7cce0",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#00629d",
+                        "outline-variant": "#c0c7d2",
+                        "on-secondary-container": "#446779",
+                        "on-secondary-fixed": "#001e2b",
+                        "on-primary-fixed": "#001d34",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-fixed": "#c3e8fd",
+                        "inverse-on-surface": "#eff1f3",
+                        "inverse-surface": "#2d3133",
+                        "on-surface-variant": "#404751",
+                        "on-primary-container": "#002f4e",
+                        "tertiary-container": "#c58800",
+                        "on-background": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f7f9fb",
+                        "tertiary-fixed-dim": "#ffba3f",
+                        "tertiary-fixed": "#ffdeae",
+                        "surface": "#f7f9fb",
+                        "on-primary-fixed-variant": "#004a78",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-fixed-variant": "#274b5c",
+                        "inverse-primary": "#99cbff",
+                        "primary-fixed-dim": "#99cbff",
+                        "surface-container-low": "#f2f4f6",
+                        "primary-fixed": "#cfe5ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .code-shadow { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05); }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="w-full sticky top-0 z-50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,98,157,0.08)]">
+<nav class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<a href="/" class="text-2xl font-bold tracking-tight bg-gradient-to-br from-blue-700 to-blue-400 bg-clip-text text-transparent font-headline">Breezy</a>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-slate-500 dark:text-slate-400 font-['Plus_Jakarta_Sans'] font-medium hover:text-blue-600 transition-colors duration-300" href="/">Home</a>
+<a class="text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 pb-1 font-['Plus_Jakarta_Sans'] font-medium transition-colors duration-300" href="/dashboard">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 font-['Plus_Jakarta_Sans'] font-medium hover:text-blue-600 transition-colors duration-300" href="#">Docs</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<a class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-full font-medium scale-95 active:scale-90 transition-transform inline-block text-center" href="/console">
+                    Try Demo
+                </a>
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+<img alt="User Profile" data-alt="professional headshot of a software engineer in a clean modern office setting with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBL5Ta7Ceipi6ygabr0qU1UYS5SQy-KZL0HPyqxWxKE9LBxyVhUxZrfKu5qTzUhtSe_xIr5D5eXPOpj4mbovqWSn38fGfUoDv9HDAZTckosZyRkoOdI1Jku-Mht0NkmnZ0GXJXHpn93Q6mfxW3-41sCIK5eBm-XCRCgmYkE6Hqq92yShJW0oykq7zqYz58zJDS3sIBDRuY_gp6dkCb1JfBfOfaSiYOv0DJfeM9kwtciYfm2XjKOvw4VwwO8cb8EvTdUWzREWwuZAtMM"/>
+</div>
+</div>
+</nav>
+</header>
+<main class="flex-grow p-6 lg:p-8 max-w-screen-2xl mx-auto w-full">
+<!-- Header Section -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant mb-2 text-sm">
+<span>Hackathon 2024</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span>Labs</span>
+</nav>
+<h1 class="text-4xl font-extrabold font-headline tracking-tight text-primary">Code Defect Lab</h1>
+<p class="text-on-surface-variant mt-1">Autonomous self-healing flow for <code class="bg-surface-container px-2 py-0.5 rounded text-primary-container font-mono text-sm">worker-logic.ts</code></p>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest text-on-surface-variant rounded-full text-sm font-medium">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    Agent Active: <span class="text-primary font-bold">Breezy-AI-v4</span>
+</span>
+</div>
+</div>
+<!-- Main Lab Environment -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+<!-- Left Pane: Code Editor -->
+<div class="lg:col-span-7 flex flex-col bg-surface-container-lowest rounded-xl shadow-sm border-0 relative overflow-hidden">
+<div class="flex items-center justify-between px-6 py-4 bg-surface-container-low">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+<span class="font-mono text-sm font-semibold text-on-surface">worker-logic.ts</span>
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] uppercase tracking-wider font-bold">Sandbox</span>
+</div>
+<div class="flex items-center gap-2">
+<button type="button" id="breezy-save-code" class="text-xs font-semibold text-primary px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20">Save</button>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-surface-container-low bg-blue-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px]" data-icon="smart_toy" data-weight="fill" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 font-mono text-sm leading-relaxed overflow-hidden bg-surface-container-lowest min-h-[500px] flex flex-col">
+<textarea id="breezy-code-editor" class="w-full flex-1 min-h-[420px] bg-surface-container-lowest text-on-surface border border-outline-variant/30 rounded-lg p-4 font-mono text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary-container" spellcheck="false"></textarea>
+<p id="breezy-code-error" class="text-xs text-error mt-2 min-h-[1rem]"></p>
+</div>
+<!-- AI Typing Indicator -->
+<div class="absolute bottom-4 left-6 right-6 flex items-center gap-3 bg-primary/5 p-4 rounded-xl border border-primary/10">
+<span class="material-symbols-outlined text-primary animate-pulse" data-icon="auto_fix">auto_fix</span>
+<p class="text-sm text-primary font-medium">Breezy AI is monitoring for defects...</p>
+</div>
+</div>
+<!-- Right Pane: Bug Injector & Test Runner -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<!-- Bug Injector Panel -->
+<section class="bg-surface-container-low p-6 rounded-xl">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-secondary" data-icon="pest_control">pest_control</span>
+<h2 class="text-xl font-headline font-bold text-on-surface">Bug Injector</h2>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<button type="button" data-breezy-code-bug="l1-commented-return" class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl hover:bg-white transition-all shadow-sm group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="code_off">code_off</span>
+<div class="text-left">
+<span class="block font-semibold text-on-surface">Inject Syntax Error</span>
+<span class="block text-xs text-on-surface-variant">Breaks the build pipeline</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="play_arrow">play_arrow</span>
+</button>
+<button type="button" data-breezy-code-bug="l2-inverted-condition" class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl hover:bg-white transition-all shadow-sm group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary" data-icon="psychology_alt">psychology_alt</span>
+<div class="text-left">
+<span class="block font-semibold text-on-surface">Inject Logic Bug</span>
+<span class="block text-xs text-on-surface-variant">Incorrect calculation output</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="play_arrow">play_arrow</span>
+</button>
+<button type="button" data-breezy-code-bug="l2-wrong-operator" class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-xl hover:bg-white transition-all shadow-sm group border-2 border-transparent hover:border-primary-container/20">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="timer_off">timer_off</span>
+<div class="text-left">
+<span class="block font-semibold text-on-surface">Inject Timeout</span>
+<span class="block text-xs text-on-surface-variant">Simulates infinite processing loops</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="play_arrow">play_arrow</span>
+</button>
+</div>
+</section>
+<!-- Test Runner Terminal -->
+<section class="bg-inverse-surface rounded-xl flex-grow flex flex-col overflow-hidden">
+<div class="flex items-center justify-between px-4 py-3 bg-black/20 border-b border-white/5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-400 text-sm" data-icon="terminal">terminal</span>
+<span class="text-white/60 font-mono text-xs">Test Runner — npm run test-runner</span>
+</div>
+<div class="flex gap-1">
+<div class="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+</div>
+</div>
+<div id="breezy-activity-code" class="p-5 font-mono text-xs space-y-2 overflow-y-auto max-h-[300px] text-white/60">
+</div>
+</section>
+<!-- Actions -->
+<div class="grid grid-cols-2 gap-4">
+<button type="button" id="breezy-reset-lab" class="bg-surface-container-high text-on-surface py-3 rounded-full font-semibold hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="refresh">refresh</span>
+                        Reset Lab
+                    </button>
+<button type="button" id="breezy-deploy-fix" class="bg-primary text-on-primary py-3 rounded-full font-semibold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="auto_fix">auto_fix</span>
+                        Deploy Fix
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 mt-auto bg-slate-50 dark:bg-slate-950">
+<div class="max-w-screen-2xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+<div class="space-y-4">
+<span class="text-lg font-semibold text-slate-800 dark:text-slate-200">Breezy Automation</span>
+<p class="text-slate-500 dark:text-slate-400 font-['Inter'] text-sm max-w-xs">© 2024 Breezy Automation. Effortless by design.</p>
+</div>
+<div class="flex flex-wrap gap-6 md:justify-end">
+<a class="text-slate-500 hover:text-blue-500 transition-colors font-['Inter'] text-sm" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:text-blue-500 transition-colors font-['Inter'] text-sm" href="#">Terms of Service</a>
+<a class="text-slate-500 hover:text-blue-500 transition-colors font-['Inter'] text-sm" href="#">Security</a>
+<a class="text-slate-500 hover:text-blue-500 transition-colors font-['Inter'] text-sm" href="#">Status</a>
+</div>
+</div>
+</footer>
+<!-- Contextual FAB (Only for Lab Execution) -->
+<div class="fixed bottom-8 right-8 z-40">
+<button type="button" id="breezy-fab-run" class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-700 to-blue-400 text-white shadow-2xl flex items-center justify-center hover:scale-110 transition-transform group" title="Run check">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-12 transition-transform" data-icon="play_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</button>
+</div>
+<script src="/breezy-app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.Breezy) Breezy.init("code");
+});
+</script>
+</body></html>

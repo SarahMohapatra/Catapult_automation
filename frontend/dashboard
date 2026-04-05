@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#99cbff",
+                    "surface-variant": "#e0e3e5",
+                    "secondary-fixed": "#c3e8fd",
+                    "inverse-surface": "#2d3133",
+                    "on-tertiary-fixed-variant": "#604100",
+                    "tertiary-container": "#c58800",
+                    "on-surface-variant": "#404751",
+                    "on-background": "#191c1e",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-error": "#ffffff",
+                    "primary-container": "#4299e1",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#446779",
+                    "surface-bright": "#f7f9fb",
+                    "outline": "#707882",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed-variant": "#004a78",
+                    "surface-tint": "#00629d",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f7f9fb",
+                    "on-surface": "#191c1e",
+                    "on-secondary-fixed-variant": "#274b5c",
+                    "outline-variant": "#c0c7d2",
+                    "secondary-container": "#c0e5fa",
+                    "tertiary-fixed": "#ffdeae",
+                    "primary": "#00629d",
+                    "background": "#f7f9fb",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-dim": "#d8dadc",
+                    "inverse-primary": "#99cbff",
+                    "surface-container-high": "#e6e8ea",
+                    "secondary-fixed-dim": "#a7cce0",
+                    "on-primary-container": "#002f4e",
+                    "on-secondary-fixed": "#001e2b",
+                    "secondary": "#3f6375",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#281800",
+                    "tertiary": "#7f5600",
+                    "on-primary-fixed": "#001d34",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#cfe5ff",
+                    "surface-container": "#eceef0",
+                    "surface-container-low": "#f2f4f6",
+                    "on-tertiary-container": "#3e2800",
+                    "tertiary-fixed-dim": "#ffba3f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-border-tonal-shift-via-bg-surface-container-low {
+            background-color: #f2f4f6;
+        }
+        #breezy-live-tickets::-webkit-scrollbar { width: 6px; }
+        #breezy-live-tickets::-webkit-scrollbar-track { background: transparent; }
+        #breezy-live-tickets::-webkit-scrollbar-thumb {
+            background: #c0c7d2;
+            border-radius: 9999px;
+        }
+        #breezy-live-tickets::-webkit-scrollbar-thumb:hover { background: #707882; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="w-full sticky top-0 z-50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,98,157,0.08)]">
+<nav class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto font-['Plus_Jakarta_Sans'] font-medium">
+<div class="flex items-center gap-8">
+<a href="/" class="text-2xl font-bold tracking-tight bg-gradient-to-br from-blue-700 to-blue-400 bg-clip-text text-transparent">Breezy</a>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="/">Home</a>
+<a class="text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 pb-1" href="/dashboard">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="#">Docs</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<a class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-semibold scale-95 active:scale-90 transition-transform shadow-lg shadow-blue-500/20 inline-block text-center" href="/console">Try Demo</a>
+<img alt="User Profile" class="w-10 h-10 rounded-full bg-surface-container shadow-sm" data-alt="close-up portrait of a professional smiling man in a modern office with soft daylight and bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFs6lm8rskwy6qY7gtE67cAyLLKOembzm9Fqi6FvQRlkBKKD61SN3g78WcQCRzTwfvt_5DLl2LjN4BurkX4EC03ul3_rhQBftqBicbezWw-BcYRqTBYkfasNJpj6vyi0OwW7bN9MMKjSjcWL8g1Ol83CDz8v251g3rvEoZK6uKnfFYlIdd_EUtU7fsPu6ecM-JXtsHCuwOBI6g2z6d56uHTGUqL4DGoS3nXX0W39wX4zu8tZsWwyPBm5CqTuyogUwqm46jHj7qxWST"/>
+</div>
+</nav>
+</header>
+<main class="flex-grow max-w-screen-2xl mx-auto w-full px-8 py-12 space-y-12">
+<!-- System Health Hero -->
+<section class="relative overflow-hidden bg-gradient-to-br from-blue-700 to-blue-500 rounded-xl p-12 text-white shadow-2xl">
+<div class="absolute top-0 right-0 w-1/3 h-full opacity-10">
+<span class="material-symbols-outlined text-[240px] translate-x-20 translate-y-10" data-icon="cloud_done">cloud_done</span>
+</div>
+<div class="relative z-10 space-y-8">
+<div class="space-y-2">
+<span class="text-blue-100 font-label tracking-widest uppercase text-sm font-semibold">Live Ecosystem Status</span>
+<h1 id="breezy-health-title" class="text-5xl font-extrabold tracking-tight">System Health: Optimal</h1>
+<p id="breezy-health-sub" class="text-blue-50 text-lg max-w-2xl">All core automation nodes are humming. Breezy is currently managing 2,492 background tasks with 0% latency spikes.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- userService Status -->
+<div class="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/10 flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-emerald-400/20 flex items-center justify-center text-emerald-300">
+<span class="material-symbols-outlined" data-icon="person_check" style="font-variation-settings: 'FILL' 1;">person_check</span>
+</div>
+<div>
+<div class="text-xs font-semibold uppercase tracking-wider text-blue-100">userService</div>
+<div id="breezy-svc-user" class="text-xl font-bold">Enabled</div>
+</div>
+</div>
+<!-- database status -->
+<div class="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/10 flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-blue-300/20 flex items-center justify-center text-blue-100">
+<span class="material-symbols-outlined" data-icon="database" style="font-variation-settings: 'FILL' 1;">database</span>
+</div>
+<div>
+<div class="text-xs font-semibold uppercase tracking-wider text-blue-100">Database</div>
+<div id="breezy-svc-db" class="text-xl font-bold">Connected <span class="text-sm font-normal opacity-70">(P: 20)</span></div>
+</div>
+</div>
+<!-- paymentService status -->
+<div class="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/10 flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-amber-300/20 flex items-center justify-center text-amber-100">
+<span class="material-symbols-outlined" data-icon="payments" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<div>
+<div class="text-xs font-semibold uppercase tracking-wider text-blue-100">paymentService</div>
+<div id="breezy-svc-pay" class="text-xl font-bold">Running</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid: Live Issues & Nav Cards -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Live Issues Card -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-xl p-8 shadow-[0_20px_40px_rgba(0,98,157,0.05)]">
+<div class="flex justify-between items-center mb-8">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="error_med">error_med</span>
+<h2 class="text-2xl font-bold">Live System Tickets</h2>
+</div>
+<span id="breezy-ticket-count" class="bg-error-container text-on-error-container px-4 py-1 rounded-full text-xs font-bold">0 Active</span>
+</div>
+<div class="space-y-3 max-h-[min(70vh,560px)] overflow-y-auto pr-1 -mr-1" id="breezy-live-tickets">
+</div>
+</div>
+<!-- Navigation Cards -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Config Monitor -->
+<a class="block bg-secondary-container text-on-secondary-container p-8 rounded-xl shadow-lg hover:translate-y-[-4px] transition-transform group overflow-hidden relative" href="/config-monitor">
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-9xl" data-icon="settings_ethernet">settings_ethernet</span>
+</div>
+<div class="relative z-10 space-y-4">
+<div class="w-12 h-12 rounded-lg bg-white/40 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</div>
+<div>
+<h3 class="text-xl font-bold">Config Monitor</h3>
+<p class="text-sm opacity-80 mt-1">Direct access to demo/config.json and environment vars.</p>
+</div>
+<div class="flex items-center gap-2 text-xs font-bold group-hover:gap-4 transition-all">
+                            EXPLORE CONFIG <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</a>
+<!-- Code Monitor -->
+<a class="block bg-primary-fixed text-on-primary-fixed p-8 rounded-xl shadow-lg hover:translate-y-[-4px] transition-transform group overflow-hidden relative" href="/code-monitor">
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-9xl" data-icon="pipeline">plumbing</span>
+</div>
+<div class="relative z-10 space-y-4">
+<div class="w-12 h-12 rounded-lg bg-white/40 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+</div>
+<div>
+<h3 class="text-xl font-bold">Code Monitor</h3>
+<p class="text-sm opacity-80 mt-1">Open the Code Defect Lab to inspect demo code and defect flows.</p>
+</div>
+<div class="flex items-center gap-2 text-xs font-bold group-hover:gap-4 transition-all">
+                            OPEN CODE MONITOR <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</a>
+</div>
+</div>
+<!-- Metric Section -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="bg-surface-container-low p-8 rounded-lg flex flex-col gap-2">
+<span class="text-on-surface-variant text-sm font-medium">Uptime</span>
+<span class="text-4xl font-black text-primary">99.99%</span>
+</div>
+<div class="bg-surface-container-low p-8 rounded-lg flex flex-col gap-2">
+<span class="text-on-surface-variant text-sm font-medium">Total Runs</span>
+<span class="text-4xl font-black text-primary">1.2M</span>
+</div>
+<div class="bg-surface-container-low p-8 rounded-lg flex flex-col gap-2">
+<span class="text-on-surface-variant text-sm font-medium">Auto-Resolutions</span>
+<span class="text-4xl font-black text-primary">84%</span>
+</div>
+<div class="bg-surface-container-low p-8 rounded-lg flex flex-col gap-2">
+<span class="text-on-surface-variant text-sm font-medium">Saved Dev Hours</span>
+<span class="text-4xl font-black text-primary">420h</span>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full py-12 mt-auto bg-slate-50 dark:bg-slate-950">
+<div class="max-w-screen-2xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+<div class="space-y-2">
+<span class="text-lg font-semibold text-slate-800 dark:text-slate-200">Breezy</span>
+<p class="font-['Inter'] text-sm text-slate-500">© 2024 Breezy Automation. Effortless by design.</p>
+</div>
+<div class="flex md:justify-end gap-6">
+<a class="text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100 text-sm" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100 text-sm" href="#">Terms of Service</a>
+<a class="text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100 text-sm" href="#">Security</a>
+<a class="text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100 text-sm" href="#">Status</a>
+</div>
+</div>
+</footer>
+<script src="/breezy-app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.Breezy) Breezy.init("dashboard");
+});
+</script>
+</body></html>

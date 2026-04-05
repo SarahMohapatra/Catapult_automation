@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Breezy - Config Monitor</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#99cbff",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-fixed": "#c3e8fd",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary-fixed-variant": "#604100",
+                        "tertiary-container": "#c58800",
+                        "on-surface-variant": "#404751",
+                        "on-background": "#191c1e",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-error": "#ffffff",
+                        "primary-container": "#4299e1",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#446779",
+                        "surface-bright": "#f7f9fb",
+                        "outline": "#707882",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#004a78",
+                        "surface-tint": "#00629d",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "on-secondary-fixed-variant": "#274b5c",
+                        "outline-variant": "#c0c7d2",
+                        "secondary-container": "#c0e5fa",
+                        "tertiary-fixed": "#ffdeae",
+                        "primary": "#00629d",
+                        "background": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-dim": "#d8dadc",
+                        "inverse-primary": "#99cbff",
+                        "surface-container-high": "#e6e8ea",
+                        "secondary-fixed-dim": "#a7cce0",
+                        "on-primary-container": "#002f4e",
+                        "on-secondary-fixed": "#001e2b",
+                        "secondary": "#3f6375",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#281800",
+                        "tertiary": "#7f5600",
+                        "on-primary-fixed": "#001d34",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#cfe5ff",
+                        "surface-container": "#eceef0",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary-container": "#3e2800",
+                        "tertiary-fixed-dim": "#ffba3f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .json-syntax-key { color: #9cdcfe; }
+        .json-syntax-string { color: #ce9178; }
+        .json-syntax-number { color: #b5cea8; }
+        .json-syntax-bool { color: #569cd6; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .bug-btn:hover .bug-icon { transform: rotate(15deg) scale(1.1); }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,98,157,0.08)]">
+<nav class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<a href="/" class="text-2xl font-bold tracking-tight bg-gradient-to-br from-blue-700 to-blue-400 bg-clip-text text-transparent">Breezy</a>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-['Plus_Jakarta_Sans'] font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="/">Home</a>
+<a class="font-['Plus_Jakarta_Sans'] font-medium text-blue-700 dark:text-blue-300 border-b-2 border-blue-500 pb-1 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="/dashboard">Dashboard</a>
+<a class="font-['Plus_Jakarta_Sans'] font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-300" href="#">Docs</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<a class="px-6 py-2 bg-gradient-to-br from-[#00629d] to-[#4299e1] text-white rounded-full font-medium scale-95 active:scale-90 transition-transform shadow-lg inline-block text-center" href="/console">Try Demo</a>
+<img alt="User Profile" class="w-10 h-10 rounded-full bg-surface-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-6ZzAd3XjUa7CDxEnBZ5iXXnKSTXCe7McQY64SgakWqEcYMP0p58137l-UdwnIwl-v1euTanPbDOHOv1AvcU4G0ETu4KgwKpc164Tbe6elqnjf3NiWI91W7sOvs-yYgK1poMEvsnZjCIqYdeqByxgzlMCC-RjICS4rJP5yhqduQUU6JPpYQeJHgDy2CDgEhuTrMLDPYDiPcCttTnFyU9eUYtMr00Z2DVhyCp9Mk4PQ5RLi58UHDbXjRgLGqd76tICXVqgLGSkPMq3"/>
+</div>
+</nav>
+</header>
+<main class="flex-grow p-8 max-w-screen-2xl mx-auto w-full space-y-8">
+<!-- System Health Header Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 flex flex-col justify-center">
+<h1 class="text-4xl font-headline font-extrabold tracking-tight text-on-surface mb-2">Config Monitor</h1>
+<p class="text-on-surface-variant text-lg">Manage your orchestration logic and monitor agent behavior in real-time.</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_20px_40px_rgba(0,98,157,0.06)] flex items-center justify-between border border-white/50">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span id="breezy-status-dot" class="w-3 h-3 bg-tertiary rounded-full animate-pulse"></span>
+<span class="text-sm font-medium text-on-surface-variant">Current Status</span>
+</div>
+<div id="breezy-config-status-title" class="text-xl font-headline font-bold text-on-surface">Resolving Issues...</div>
+<div id="breezy-config-status-sub" class="text-sm text-blue-600 font-medium">Connecting to agents…</div>
+</div>
+<div class="bg-blue-50 p-3 rounded-full">
+<span class="material-symbols-outlined text-blue-600" style="font-size: 32px;">memory</span>
+</div>
+</div>
+</section>
+<!-- Main Layout: Three Columns (Sidebar + Code + Activity) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Left Column: Bug Injection Sidebar -->
+<div class="lg:col-span-3 space-y-4">
+<div class="flex items-center gap-2 px-2 mb-2">
+<span class="material-symbols-outlined text-error text-xl">pest_control</span>
+<h2 class="font-headline font-bold text-xl text-on-surface">Bug Injection</h2>
+</div>
+<div class="flex flex-col gap-3">
+<button type="button" data-breezy-fault="lock_user" class="bug-btn group flex items-start gap-4 p-4 bg-white hover:bg-red-50 border border-slate-100 hover:border-red-200 rounded-xl transition-all shadow-sm active:scale-[0.98]">
+<span class="material-symbols-outlined bug-icon text-red-500 mt-0.5 transition-transform">lock</span>
+<div class="text-left">
+<div class="font-bold text-sm text-slate-800">Locked User Account</div>
+<p class="text-xs text-slate-500 mt-1">Simulate massive 403 spikes from auth-service.</p>
+</div>
+</button>
+<button type="button" data-breezy-fault="zero_pool" class="bug-btn group flex items-start gap-4 p-4 bg-white hover:bg-amber-50 border border-slate-100 hover:border-amber-200 rounded-xl transition-all shadow-sm active:scale-[0.98]">
+<span class="material-symbols-outlined bug-icon text-amber-600 mt-0.5 transition-transform">database</span>
+<div class="text-left">
+<div class="font-bold text-sm text-slate-800">DB Connection Warning</div>
+<p class="text-xs text-slate-500 mt-1">Simulate connection pool exhaustion in Postgres.</p>
+</div>
+</button>
+<button type="button" data-breezy-fault="zero_rate_limit" class="bug-btn group flex items-start gap-4 p-4 bg-white hover:bg-purple-50 border border-slate-100 hover:border-purple-200 rounded-xl transition-all shadow-sm active:scale-[0.98]">
+<span class="material-symbols-outlined bug-icon text-purple-600 mt-0.5 transition-transform">bolt</span>
+<div class="text-left">
+<div class="font-bold text-sm text-slate-800">Latency Spike</div>
+<p class="text-xs text-slate-500 mt-1">Inject 2000ms delay into US-East gateway.</p>
+</div>
+</button>
+<button type="button" data-breezy-fault="crash_services" class="bug-btn group flex items-start gap-4 p-4 bg-white hover:bg-slate-50 border border-slate-100 hover:border-slate-200 rounded-xl transition-all shadow-sm active:scale-[0.98]">
+<span class="material-symbols-outlined bug-icon text-slate-600 mt-0.5 transition-transform">refresh</span>
+<div class="text-left">
+<div class="font-bold text-sm text-slate-800">OOM Loop</div>
+<p class="text-xs text-slate-500 mt-1">Trigger restart-on-failure loop for micro-services.</p>
+</div>
+</button>
+</div>
+<div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 mt-4">
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-2">Instructions</p>
+<p class="text-xs text-on-surface-variant leading-relaxed">Selecting a bug will trigger real-time SSE event simulation for connected agents.</p>
+</div>
+</div>
+<!-- Middle Column: JSON Editor -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<div class="bg-[#1e1e1e] rounded-xl overflow-hidden shadow-2xl border border-white/5">
+<div class="bg-[#252526] px-4 py-3 flex justify-between items-center border-b border-white/5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-400 text-sm">terminal</span>
+<span class="text-slate-400 text-xs font-mono">demo/config.json</span>
+</div>
+<div class="flex gap-1.5">
+<div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+<div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+<div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+</div>
+</div>
+<div class="p-4 font-mono text-sm leading-relaxed overflow-hidden max-h-[440px] flex flex-col">
+<textarea id="breezy-config-editor" class="w-full flex-1 min-h-[360px] bg-[#1e1e1e] text-[#d4d4d4] border border-white/10 rounded-lg p-4 font-mono text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary-container" spellcheck="false"></textarea>
+<p id="breezy-config-error" class="text-xs text-error mt-2 min-h-[1rem]"></p>
+</div>
+</div>
+<div class="flex gap-4">
+<button type="button" id="breezy-save-config" class="flex-1 py-3 bg-gradient-to-br from-[#00629d] to-[#4299e1] text-white rounded-xl font-headline font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">save</span>
+                        Save Config
+                    </button>
+<button type="button" id="breezy-check-config" class="flex-1 py-3 bg-white text-blue-600 rounded-xl font-headline font-bold flex items-center justify-center gap-2 shadow-sm border border-slate-100 hover:bg-surface-container-low active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">rule</span>
+                        Check Now
+                    </button>
+</div>
+</div>
+<!-- Right Column: Agent Activity Timeline -->
+<div class="lg:col-span-4 space-y-4">
+<div class="flex justify-between items-center mb-2 px-2">
+<h2 class="font-headline font-bold text-xl text-on-surface">Agent Activity</h2>
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed text-[10px] font-bold rounded-full uppercase tracking-widest flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse"></span>
+                        Live Stream
+                    </span>
+</div>
+<div class="space-y-4 relative max-h-[500px] overflow-y-auto no-scrollbar pr-1" id="breezy-agent-activity">
+<!-- Timeline Line -->
+<div class="absolute left-6 top-4 bottom-4 w-px bg-slate-200"></div>
+<div class="relative pl-12 text-xs text-on-surface-variant italic">Live agent steps and server logs appear here.</div>
+</div>
+</div>
+</div>
+<!-- Metric Overview Cards -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface-container-low p-6 rounded-lg border border-slate-100">
+<div class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">CPU LOAD</div>
+<div class="text-2xl font-headline font-bold text-on-surface">14.2%</div>
+<div class="mt-2 h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-blue-500 w-[14%]"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg border border-slate-100">
+<div class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">MEMORY</div>
+<div class="text-2xl font-headline font-bold text-on-surface">4.8 GB</div>
+<div class="mt-2 h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-blue-500 w-[32%]"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg border border-slate-100">
+<div class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">LATENCY</div>
+<div class="text-2xl font-headline font-bold text-on-surface">112ms</div>
+<div class="mt-2 h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[65%]"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg border border-slate-100">
+<div class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">UPTIME</div>
+<div class="text-2xl font-headline font-bold text-on-surface">14d 2h</div>
+<div class="mt-2 h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-green-500 w-[99%]"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 mt-auto bg-slate-50 dark:bg-slate-950">
+<div class="max-w-screen-2xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+<div class="space-y-2">
+<div class="text-lg font-semibold text-slate-800 dark:text-slate-200">Breezy</div>
+<div class="font-['Inter'] text-sm text-slate-500">© 2024 Breezy Automation. Effortless by design.</div>
+</div>
+<div class="flex flex-wrap gap-6 md:justify-end">
+<a class="font-['Inter'] text-sm text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-['Inter'] text-sm text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-['Inter'] text-sm text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100" href="#">Security</a>
+<a class="font-['Inter'] text-sm text-slate-500 hover:text-blue-500 transition-colors opacity-80 hover:opacity-100" href="#">Status</a>
+</div>
+</div>
+</footer>
+<!-- FAB for quick context -->
+<a href="/dashboard" class="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-br from-[#00629d] to-[#4299e1] text-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all z-50" title="Dashboard">
+<span class="material-symbols-outlined">support_agent</span>
+</a>
+<script src="/breezy-app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.Breezy) Breezy.init("config");
+});
+</script>
+</body></html>
